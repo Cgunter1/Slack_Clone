@@ -1,0 +1,12 @@
+[{
+    "channels": ["general", 
+                 "help", 
+                 "react",
+                 "redux"
+    ],
+    "users": ["Chris",
+        "John",
+        "Sarah",
+        "Fred"
+    ]
+}]

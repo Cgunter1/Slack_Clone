@@ -1,0 +1,54 @@
+.current-tab {
+    margin-left: 0px;
+    background-color: rgb(255, 196, 0);
+    color: black;
+    border-radius: 2px 0px 0px 2px;
+    font-weight: 100;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.navbar {
+    position: fixed;
+    width: 25%;
+    height: 100vh;
+    background-color: rgba(21, 21, 82, 0.815);
+    display: inline-block;
+    color: white;
+    min-width: 100px;
+    z-index: 100;
+}
+
+.content {
+    padding-top: .8em;
+    padding-left: 1em;
+    font-size: 15px;
+}
+
+.channel-items {
+    list-style: none;
+    padding-left: 0px;
+}
+
+.channel-items li {
+    margin-bottom: 3px;
+}
+
+.data {
+    padding-left: 3px;
+    cursor: pointer;
+}
+
+.people {
+    margin-top: 50px;
+}
+
+.people-items {
+    list-style: none;
+    padding-left: 0px;
+}
+
+.people-items li {
+    margin-bottom: 3px;
+    cursor: pointer;
+}
