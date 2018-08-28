@@ -1,0 +1,34 @@
+{
+  "name": "slack_express",
+  "version": "1.0.0",
+  "description": "This is the api for the slack app that will deal with the interaction with the database.",
+  "main": "server.js",
+  "scripts": {
+    "start": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && nodemon ./server/lib/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cgunter1/Slack_Clone.git"
+  },
+  "keywords": [
+    "MongoDB",
+    "Express"
+  ],
+  "author": "Christopher Gunter",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Cgunter1/Slack_Clone/issues"
+  },
+  "homepage": "https://github.com/Cgunter1/Slack_Clone#readme",
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0-rc.4",
+    "express": "^4.16.3",
+    "mongoose": "^5.2.10"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-rc.4",
+    "@babel/core": "^7.0.0-rc.4",
+    "@babel/preset-env": "^7.0.0-rc.4"
+  }
+}
