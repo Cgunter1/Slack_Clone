@@ -11,7 +11,7 @@ router.get('/:userId/:channelId', (req, res) => {
     // are the same. If they aren't, it fails.
 });
 
-router.post('/user/:userId/:channelId', (req, res) => {
+router.post('/:userId/:channelId', (req, res) => {
     // The information is checked with the userId to make sure that is correct.
     // The post body is given with the userId, message, timestamp.
 });

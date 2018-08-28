@@ -13,13 +13,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // import bodyParser from 'body-parser';
 const router = _express.default.Router();
 
-router.get('/:userId/:channelId', (req, res) => {
-  // When the request reaches the database api, the api
+router.get('/:userId/:channelId', (req, res) => {// When the request reaches the database api, the api
   // checks if the id given and any of the other user ids of the conversation
   // are the same. If they aren't, it fails.
-  res.send('ads');
 });
-router.post('/user/:userId/:channelId', (req, res) => {// The information is checked with the userId to make sure that is correct.
+router.post('/:userId/:channelId', (req, res) => {// The information is checked with the userId to make sure that is correct.
   // The post body is given with the userId, message, timestamp.
 });
 var _default = router;

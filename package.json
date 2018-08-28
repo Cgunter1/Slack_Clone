@@ -4,7 +4,7 @@
   "description": "This is the api for the slack app that will deal with the interaction with the database.",
   "main": "server.js",
   "scripts": {
-    "start": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && nodemon ./server/lib/server.js",
+    "start": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && nodemon ./server/lib/api/server.js | bunyan",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,6 +24,8 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0-rc.4",
     "body-parser": "^1.18.3",
+    "bunyan": "^1.8.12",
+    "bunyan-rotating-file-stream": "^1.6.3",
     "express": "^4.16.3",
     "mongoose": "^5.2.10"
   },

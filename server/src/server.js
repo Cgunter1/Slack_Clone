@@ -1,6 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import messageRouter from './message_api.js';
+import messageRouter from './api/message_api.js';
+import log from './config.js';
+
+const logger = log.log;
 
 const app = express();
 // Body Parser allows for req body.
@@ -10,6 +13,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('PORT', process.env.port || 5000);
 
+
+app.use((req, res, next) => {
+  logger.info(`${req.method} Request of ${req.url} and Body: ${req.headers}`);
+  next();
+});
 
 app.get('/', (req, res) => {
     res.send('[{}]');
