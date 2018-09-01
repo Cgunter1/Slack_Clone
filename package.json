@@ -23,6 +23,7 @@
   "homepage": "https://github.com/Cgunter1/Slack_Clone#readme",
   "dependencies": {
     "@babel/polyfill": "^7.0.0-rc.4",
+    "bcrypt": "^3.0.0",
     "body-parser": "^1.18.3",
     "bunyan": "^1.8.12",
     "bunyan-rotating-file-stream": "^1.6.3",

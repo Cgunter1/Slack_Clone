@@ -2,8 +2,14 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import messageRouter from './api/message_api.js';
 import log from './config.js';
+import credentials from '../../secretUsernamePassword.js';
+import mongoose from 'mongoose';
+
+const url = `mongodb://${credentials.username}:${credentials.password}@ds239692.mlab.com:39692/slack_clone`;
 
 const logger = log.log;
+
+mongoose.connect(url, () => console.log('Database Connected!'));
 
 const app = express();
 // Body Parser allows for req body.
