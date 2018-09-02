@@ -1,8 +1,11 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
+// This is the salt that will be used with the bcrypt function
+// and password to create a hash.
 const SALT_FACTOR = 10;
 
+// This is the schema for the user collection of the MongoDB.
 const userSchema = mongoose.schema({
     username: String,
     password: String,
@@ -10,6 +13,8 @@ const userSchema = mongoose.schema({
     timestamps: {createdAt: 'created_at', updatedAt: 'update_at'},
 });
 
+// This remembers to hash the password with bcrypt before
+// saving the user password to the Mongo Database.
 userSchema.pre('save', async function(next) {
   const user = this;
   bcrypt.genSalt(SALT_FACTOR, function(err, salt) {
@@ -20,6 +25,8 @@ userSchema.pre('save', async function(next) {
   });
 });
 
+// Adds the comparePasswords method to the schema, so it is accessible
+// to compare the passwords without headache.
 userSchema.methods.comparePasswords = function(possiblePassword, cb) {
     bcrypt.compare(possiblePassword, this.password, function(err, res) {
         if (err) {

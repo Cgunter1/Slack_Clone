@@ -1,12 +1,17 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import messageRouter from './api/message_api.js';
+import userRouter from './api/user_api.js';
 import log from './config.js';
 import credentials from '../../secretUsernamePassword.js';
 import mongoose from 'mongoose';
 
+// This is the link to the Slack Clone's Mongo Database. The username
+// and password are on a different file, so no peeking...
 const url = `mongodb://${credentials.username}:${credentials.password}@ds239692.mlab.com:39692/slack_clone`;
 
+// This establishes the logging I will be using over this project,
+// which is bunyan.
 const logger = log.log;
 
 mongoose.connect(url, () => console.log('Database Connected!'));
@@ -19,22 +24,23 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('PORT', process.env.port || 5000);
 
-
+// Makes sure to always log the request, url, and header on every request to
+// the server.
 app.use((req, res, next) => {
   logger.info(`${req.method} Request of ${req.url} and Body: ${req.headers}`);
   next();
 });
 
-app.get('/', (req, res) => {
-    res.send('[{}]');
-});
 
-app.post('/', (req, res) => {
-    console.log(req.body);
-    res.end('Thanks');
-});
-
+// For any urls that are /message or /user
 app.use('/message', messageRouter);
+app.use('/user', userRouter);
+
+// If it is not in the message router or user router
+// then it is an erroneous error.
+app.all('*', (req, res) => {
+    res.status(404).send('Sorry can\'t find that!');
+});
 
 app.listen(app.get('PORT'), () => {
     console.log(`Running on Port ${app.get('PORT')}.`);
