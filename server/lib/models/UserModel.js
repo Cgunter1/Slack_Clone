@@ -15,13 +15,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // and password to create a hash.
 const SALT_FACTOR = 10; // This is the schema for the user collection of the MongoDB.
 
-const userSchema = _mongoose.default.schema({
+const userSchema = new _mongoose.default.Schema({
   username: String,
   password: String,
   email: String,
-  timestamps: {
-    createdAt: 'created_at',
-    updatedAt: 'update_at'
+  date: {
+    type: Date,
+    default: Date.now()
   },
   channels: [{
     name: String,
@@ -38,11 +38,10 @@ const userSchema = _mongoose.default.schema({
 }); // This remembers to hash the password with bcrypt before
 // saving the user password to the Mongo Database.
 
-
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', function (next) {
   const user = this;
-
-  _bcrypt.default.genSalt(SALT_FACTOR, function (err, salt) {
+  if (!user.isModified('password')) return next();
+  return _bcrypt.default.genSalt(SALT_FACTOR, function (err, salt) {
     return _bcrypt.default.hash(user.password, salt, function (err, hash) {
       user.password = hash;
       return next();

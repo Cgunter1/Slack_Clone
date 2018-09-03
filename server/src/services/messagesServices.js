@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import messageSchema from '../models/MessageModel.js';
+import channelServices from './channelsServices.js';
 import {log} from '../config.js';
 
 // Find messages by channelId.
@@ -8,6 +9,26 @@ import {log} from '../config.js';
 async function findMessages(channelId){
     try{
         let messages = await messageSchema.find({channel_id: channelId});
+        return messages;
+    } catch(e){
+        log.error(e);
+    }
+}
+
+// Creates Message on channel_id.
+
+async function createMeassage(channelId, userName, message){
+    try{
+        let messages = await messageSchema.insert({
+            channel_id: channelId, 
+            username: userName,
+            message: message,
+            date: Date.now(),
+        });
+        // Updates the time of the channel last written to.
+        let channel = await channelServices.getChannel(channelId);
+        channel.date = Date.now();
+        await channel.save();
         return messages;
     } catch(e){
         log.error(e);

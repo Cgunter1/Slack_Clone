@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 import userSchema from '../models/UserModel.js';
 import channelService from './channelsServices.js';
-import {log} from '../config.js';
+import logger from '../config.js';
+
+let log = logger.log;
 
 // Add user to channel.
 // Explanation: Basically this goes to the userSchema and finds
@@ -18,6 +20,16 @@ async function addPersonToChannel(channelId, channelName, personId){
   }
 }
 
+// This is for creating the user.
+async function createUser(userEmail, userName, userPassword){
+  try{
+    let user = new userSchema({username: userName, password: userPassword, email: userEmail});
+    return await user.save();
+  } catch(e){
+    log.error(e);
+    return e;
+  }
+}
 
 // After every friend is added to the user, a new channel will be created
 // for them with the friend's name as the title.
@@ -87,4 +99,5 @@ export default {
   removeFriend,
   getUserChannels,
   addChannel,
+  createUser,
 };

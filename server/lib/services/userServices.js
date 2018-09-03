@@ -11,14 +11,15 @@ var _UserModel = _interopRequireDefault(require("../models/UserModel.js"));
 
 var _channelsServices = _interopRequireDefault(require("./channelsServices.js"));
 
-var _config = require("../config.js");
+var _config = _interopRequireDefault(require("../config.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Add user to channel.
+let log = _config.default.log; // Add user to channel.
 // Explanation: Basically this goes to the userSchema and finds
 // the user that the current user wants to add, if the user finds
 // him, the current channelId is added to that user's channels.
+
 async function addPersonToChannel(channelId, channelName, personId) {
   try {
     let user = await _UserModel.default.findById(personId);
@@ -27,10 +28,24 @@ async function addPersonToChannel(channelId, channelName, personId) {
       id: channelId
     });
     await user.save();
-
-    _config.log.info(`Logged ${channelName} into ${user.username}`);
+    log.info(`Logged ${channelName} into ${user.username}`);
   } catch (e) {
-    _config.log.error(e);
+    log.error(e);
+  }
+} // This is for creating the user.
+
+
+async function createUser(userEmail, userName, userPassword) {
+  try {
+    let user = new _UserModel.default({
+      username: userName,
+      password: userPassword,
+      email: userEmail
+    });
+    return await user.save();
+  } catch (e) {
+    log.error(e);
+    return e;
   }
 } // After every friend is added to the user, a new channel will be created
 // for them with the friend's name as the title.
@@ -57,7 +72,7 @@ async function addFriend(userName, userId, friendName) {
     await user.save();
     await friend.save();
   } catch (e) {
-    _config.log.error(e);
+    log.error(e);
   }
 } // Remove friend. Arguments: Username, friendName and friendObjectId
 // Explanation: Removes the friend from the friends array and objectid from
@@ -76,7 +91,7 @@ async function removeFriend(userId, channelName, channelId) {
     await user.save();
     await friend.save();
   } catch (e) {
-    _config.log.error(e);
+    log.error(e);
   }
 } // Get all channels and friends from user_id.
 
@@ -86,7 +101,7 @@ async function getUserChannels(userId) {
     let user = await _UserModel.default.findById(userId);
     return [user.channels, user.friends];
   } catch (e) {
-    _config.log.error(e);
+    log.error(e);
   }
 } // Add new channel to user. This is in response to
 // the channelService createChannel.
@@ -102,7 +117,7 @@ async function addChannel(channelName, channelId, userId) {
     });
     await user.save();
   } catch (e) {
-    _config.log.error(e);
+    log.error(e);
   }
 }
 
@@ -111,6 +126,7 @@ var _default = {
   addFriend,
   removeFriend,
   getUserChannels,
-  addChannel
+  addChannel,
+  createUser
 };
 exports.default = _default;
