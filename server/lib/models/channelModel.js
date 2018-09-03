@@ -10,10 +10,10 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // This is the schema for the channel collection of the MongoDB.
-const ChannelSchema = _mongoose.default.schema({
-  name: String,
-  users: [String]
+const channelSchema = _mongoose.default.schema({
+  name: String
 });
 
-var _default = ChannelSchema;
+var _default = _mongoose.default.model('Channel', channelSchema);
+
 exports.default = _default;

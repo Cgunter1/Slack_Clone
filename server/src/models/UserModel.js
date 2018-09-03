@@ -11,6 +11,12 @@ const userSchema = mongoose.schema({
     password: String,
     email: String,
     timestamps: {createdAt: 'created_at', updatedAt: 'update_at'},
+    channels: [{name: String, id: mongoose.Schema.Types.ObjectId}],
+    // The channels array for are there to verify if the user has 
+    // access to the other channels.
+    friends: [{name: String, id: mongoose.Schema.Types.ObjectId}],
+    // The friends array is there to keep track of the name of the
+    // friends and the channels.
 });
 
 // This remembers to hash the password with bcrypt before
@@ -37,4 +43,4 @@ userSchema.methods.comparePasswords = function(possiblePassword, cb) {
     });
 };
 
-export default userSchema;
+export default mongoose.model('User', userSchema);

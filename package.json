@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && nodemon ./server/lib/api/server.js | bunyan",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && node ./server/lib/tests/testApis.js | bunyan"
   },
   "repository": {
     "type": "git",

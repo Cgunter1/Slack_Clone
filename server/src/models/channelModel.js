@@ -1,9 +1,8 @@
 import mongoose from 'mongoose';
 
 // This is the schema for the channel collection of the MongoDB.
-const ChannelSchema = mongoose.schema({
+const channelSchema = mongoose.schema({
     name: String,
-    users: [String],
 });
 
-export default ChannelSchema;
+export default mongoose.model('Channel', channelSchema);

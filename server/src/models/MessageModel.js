@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 // This is the schema for the message collection of the MongoDB.
-const MessageSchema = mongoose.schema({
+const messageSchema = mongoose.schema({
     // The messageSchema will have id for the message that it belongs to.
     // The reason is so that a thread can have an unlimited number of messages.
     // With embedding the messages instead into the channel collection, that
@@ -12,4 +12,4 @@ const MessageSchema = mongoose.schema({
     date: {type: Date, default: Date.now},
 });
 
-export default MessageSchema;
+export default mongoose.model('Message', messageSchema);
