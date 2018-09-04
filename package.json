@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && nodemon ./server/lib/api/server.js | bunyan",
-    "test": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && mocha ./server/lib/tests/testApis.js | bunyan"
+    "test": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && mocha -c ./server/lib/tests/testApis.js | bunyan"
   },
   "repository": {
     "type": "git",

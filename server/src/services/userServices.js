@@ -20,6 +20,23 @@ async function addPersonToChannel(channelId, channelName, personId){
   }
 }
 
+async function removeChannel(userId, channelId){
+  let user = await findUser('id', userId);
+  user.channels.filter(channel => channel.id !== channelId);
+  return user.save();
+}
+
+// Deletes the User from the database from whatever info that is provided.
+async function deleteUser(personInfo){
+  try{
+    let request = userSchema.deleteOne(personInfo);
+    return request
+  } catch(e){
+    log.error(e);
+    return e;
+  }
+}
+
 // This is for creating the user.
 async function createUser(userEmail, userName, userPassword){
   try{
@@ -34,14 +51,27 @@ async function createUser(userEmail, userName, userPassword){
 // After every friend is added to the user, a new channel will be created
 // for them with the friend's name as the title.
 
+async function findUser(query, value) {
+  try {
+    let user;
+    if(query === 'id') user = await userSchema.findById(value);
+    if(query === 'name') user = await userSchema.findOne({username: value});
+    return user;
+  } catch(e) {
+    return e;
+  }
+}
 
 // Add user to friends. Arguments: Username and friendName
 // Explanation: This updates the document by appending a new username_string
 // to the user's own friends and then creates a new channel for that friend.
+// *******************************************************
+// *** Don't forget to increment channel members by 1. ***
+// *******************************************************
 async function addFriend(userName, userId, friendName){
     try{
-        let user = await userSchema.findById(userId);
-        let friend = await userSchema.find({name: friendName});
+        let user = await findUser('id', userId);
+        let friend = await findUser('name', friendName);
         let channel = await channelService.createChannel(userName, userId, friendName);
         user.friends.push({name: friend.username, id: channel._id});
         friend.friends.push({name: user.username, id: channel._id});
@@ -100,4 +130,7 @@ export default {
   getUserChannels,
   addChannel,
   createUser,
+  findUser,
+  deleteUser,
+  removeChannel,
 };

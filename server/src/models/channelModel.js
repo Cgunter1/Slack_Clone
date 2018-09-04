@@ -7,6 +7,7 @@ const channelSchema = new mongoose.Schema({
         type: Date,
         default: Date.now(),
     },
+    members: Number,
 });
 
 export default mongoose.model('Channel', channelSchema);

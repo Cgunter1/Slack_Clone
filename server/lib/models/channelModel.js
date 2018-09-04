@@ -15,7 +15,8 @@ const channelSchema = new _mongoose.default.Schema({
   date: {
     type: Date,
     default: Date.now()
-  }
+  },
+  members: Number
 });
 
 var _default = _mongoose.default.model('Channel', channelSchema);
