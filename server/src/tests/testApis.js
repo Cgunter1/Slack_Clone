@@ -115,24 +115,65 @@ describe('Database Tests', function() {
     });
 
     describe('Test#3: Add/Remove Channels from Users',
-    function() {
+      function() {
+        let userId;
+        let friendId;
+        let channelId;
         before(function(done) {
             Promise.all([
             userServices.createUser(
                 'email@gmail.com',
-                'Cinefiled',
+                'Cinefiled!',
                 '123password'),
             userServices.createUser(
-                'email@gmail.com',
-                'Cinefiled',
+                'email23@gmail.com',
+                'Munter',
                 '123password')]
-            ).then((res) => done());
+            ).then(function(res) {
+                userId = res[0]._id;
+                friendId = res[1]._id;
+                done();
+            });
         });
 
-        describe('Add Friend to ', function() {
-            it('This should delete the user from the database',
+        describe('Creates Channel and adds it to User array of Channel',
+          function() {
+            it('Should return the user array of channels that includes a new Channel',
               async function() {
-                expect(1).to.equal(1);
+                    let channelRequest = await channelServices.createChannel(
+                        'Cinefiled!',
+                        userId,
+                        'Channel'
+                    );
+
+                    channelId = channelRequest._id;
+
+                    let user = await userServices.findUser('id', userId);
+                    expect(channelId).to.deep.equal(user.channels[0].id);
+            });
+        });
+
+        describe('Adds user to newly created Channel',
+          function() {
+            it('The new user now have the new channel in its channel array',
+              async function() {
+                    await userServices.addPersonToChannel(
+                      channelId, 'Channel', friendId);
+
+                    let user = await userServices.findUser('id', friendId);
+                    expect(channelId).to.deep.equal(user.channels[0].id);
+            });
+        });
+
+        describe('Removes friend from channel',
+          function() {
+            it('The user should now not have the channel in the array',
+              async function() {
+                    await userServices.removeChannel(friendId, channelId);
+
+                    let user = await userServices.findUser('id', friendId);
+
+                    expect(user.channels.length).to.equal(0);
             });
         });
 
@@ -140,11 +181,11 @@ describe('Database Tests', function() {
             Promise.all([
                 userServices.deleteUser({
                     email: 'email@gmail.com',
-                    username: 'Cinefiled',
+                    username: 'Cinefiled!',
                     }),
                 userServices.deleteUser({
-                    email: 'email123@gmail.com',
-                    username: 'Cgunter',
+                    email: 'email23@gmail.com',
+                    username: 'Munter',
                 })]
                 ).then((res) => done());
         });
@@ -158,8 +199,8 @@ describe('Database Tests', function() {
                 'Cinefiled',
                 '123password'),
             userServices.createUser(
-                'email@gmail.com',
-                'Cinefiled',
+                'email123@gmail.com',
+                'Cgunter',
                 '123password')]
             ).then((res) => done());
         });

@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import userSchema from '../models/UserModel.js';
 import channelService from './channelsServices.js';
 import logger from '../config.js';
+import deepEqual from 'deep-equal';
 
 let log = logger.log;
 
@@ -12,17 +13,27 @@ let log = logger.log;
 async function addPersonToChannel(channelId, channelName, personId){
   try{
     let user = await userSchema.findById(personId);
+    let channel = await channelService.getChannel(channelId);
     user.channels.push({name: channelName, id: channelId});
+    ++channel.members;
+    await channel.save();
     await user.save();
     log.info(`Logged ${channelName} into ${user.username}`);
   }catch(e){
     log.error(e)
+    return e;
   }
 }
 
 async function removeChannel(userId, channelId){
   let user = await findUser('id', userId);
-  user.channels.filter(channel => channel.id !== channelId);
+  let newChannel = [];
+  for(let channel of user.channels) {
+    if(!deepEqual(channel.id, channelId)) {
+      newChannel.push(channel);
+    }
+  }
+  user.channels = newChannel;
   return user.save();
 }
 
@@ -30,7 +41,7 @@ async function removeChannel(userId, channelId){
 async function deleteUser(personInfo){
   try{
     let request = userSchema.deleteOne(personInfo);
-    return request
+    return request;
   } catch(e){
     log.error(e);
     return e;

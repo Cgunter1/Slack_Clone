@@ -13,6 +13,8 @@ var _channelsServices = _interopRequireDefault(require("./channelsServices.js"))
 
 var _config = _interopRequireDefault(require("../config.js"));
 
+var _deepEqual = _interopRequireDefault(require("deep-equal"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 let log = _config.default.log; // Add user to channel.
@@ -23,20 +25,32 @@ let log = _config.default.log; // Add user to channel.
 async function addPersonToChannel(channelId, channelName, personId) {
   try {
     let user = await _UserModel.default.findById(personId);
+    let channel = await _channelsServices.default.getChannel(channelId);
     user.channels.push({
       name: channelName,
       id: channelId
     });
+    ++channel.members;
+    await channel.save();
     await user.save();
     log.info(`Logged ${channelName} into ${user.username}`);
   } catch (e) {
     log.error(e);
+    return e;
   }
 }
 
 async function removeChannel(userId, channelId) {
   let user = await findUser('id', userId);
-  user.channels.filter(channel => channel.id !== channelId);
+  let newChannel = [];
+
+  for (let channel of user.channels) {
+    if (!(0, _deepEqual.default)(channel.id, channelId)) {
+      newChannel.push(channel);
+    }
+  }
+
+  user.channels = newChannel;
   return user.save();
 } // Deletes the User from the database from whatever info that is provided.
 

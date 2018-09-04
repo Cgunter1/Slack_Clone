@@ -106,9 +106,52 @@ describe('Database Tests', function () {
       }).then(res => done());
     });
   });
-  describe('Test#3: UserService: Friend Interactions', function () {
+  describe('Test#3: Add/Remove Channels from Users', function () {
+    let userId;
+    let friendId;
+    let channelId;
     before(function (done) {
-      Promise.all([_userServices.default.createUser('email@gmail.com', 'Cinefiled', '123password'), _userServices.default.createUser('email@gmail.com', 'Cinefiled', '123password')]).then(res => done());
+      Promise.all([_userServices.default.createUser('email@gmail.com', 'Cinefiled!', '123password'), _userServices.default.createUser('email23@gmail.com', 'Munter', '123password')]).then(function (res) {
+        userId = res[0]._id;
+        friendId = res[1]._id;
+        done();
+      });
+    });
+    describe('Creates Channel and adds it to User array of Channel', function () {
+      it('Should return the user array of channels that includes a new Channel', async function () {
+        let channelRequest = await _channelsServices.default.createChannel('Cinefiled!', userId, 'Channel');
+        channelId = channelRequest._id;
+        let user = await _userServices.default.findUser('id', userId);
+        (0, _chai.expect)(channelId).to.deep.equal(user.channels[0].id);
+      });
+    });
+    describe('Adds user to newly created Channel', function () {
+      it('The new user now have the new channel in its channel array', async function () {
+        await _userServices.default.addPersonToChannel(channelId, 'Channel', friendId);
+        let user = await _userServices.default.findUser('id', friendId);
+        (0, _chai.expect)(channelId).to.deep.equal(user.channels[0].id);
+      });
+    });
+    describe('Removes friend from channel', function () {
+      it('The user should now not have the channel in the array', async function () {
+        await _userServices.default.removeChannel(friendId, channelId);
+        let user = await _userServices.default.findUser('id', friendId);
+        (0, _chai.expect)(user.channels.length).to.equal(0);
+      });
+    });
+    after(function (done) {
+      Promise.all([_userServices.default.deleteUser({
+        email: 'email@gmail.com',
+        username: 'Cinefiled!'
+      }), _userServices.default.deleteUser({
+        email: 'email23@gmail.com',
+        username: 'Munter'
+      })]).then(res => done());
+    });
+  });
+  describe('Test#4: UserService: Friend Interactions', function () {
+    before(function (done) {
+      Promise.all([_userServices.default.createUser('email@gmail.com', 'Cinefiled', '123password'), _userServices.default.createUser('email123@gmail.com', 'Cgunter', '123password')]).then(res => done());
     });
     describe('Add Friend to ', function () {
       it('This should delete the user from the database', async function () {
