@@ -42,16 +42,24 @@ async function addPersonToChannel(channelId, channelName, personId) {
 
 async function removeChannel(userId, channelId) {
   let user = await findUser('id', userId);
+  let channel = await _channelsServices.default.getChannel(channelId);
   let newChannel = [];
 
-  for (let channel of user.channels) {
-    if (!(0, _deepEqual.default)(channel.id, channelId)) {
-      newChannel.push(channel);
+  for (let channel1 of user.channels) {
+    if (!(0, _deepEqual.default)(channel1.id, channelId)) {
+      newChannel.push(channel1);
     }
   }
 
   user.channels = newChannel;
-  return user.save();
+  await user.save();
+
+  if (channel) {
+    --channel.members;
+    await channel.save();
+  }
+
+  return null;
 } // Deletes the User from the database from whatever info that is provided.
 
 

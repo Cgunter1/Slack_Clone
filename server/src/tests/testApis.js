@@ -4,6 +4,7 @@ import messageServices from '../services/messagesServices.js';
 import credentials from '../../../secretUsernamePassword.js';
 import mongoose from 'mongoose';
 import mocha from 'mocha';
+import deepEqual from 'deep-equal';
 import {expect} from 'chai';
 import {log} from '../config.js';
 import { doesNotReject } from 'assert';
@@ -92,17 +93,17 @@ describe('Database Tests', function() {
                 expect(request.name).to.equal('Channel');
             });
         });
-        describe('Finds User in Database', function() {
+        describe('Finds Channel in Database', function() {
             it('This should get the same user back from the database',
               async function() {
                 let request = await channelServices.getChannel(channelId);
                 expect(request.name).to.equal('Channel');
             });
         });
-        describe('Delete User in Database', function() {
+        describe('Delete Channel in Database', function() {
             it('This should delete the user from the database',
               async function() {
-                let response = await channelServices.removeChannel(channelId, userId);
+                let response = await channelServices.removeChannel(userId, channelId);
                 expect(response.ok).to.equal(1);
             });
         });
@@ -132,7 +133,7 @@ describe('Database Tests', function() {
             ).then(function(res) {
                 userId = res[0]._id;
                 friendId = res[1]._id;
-                done();
+             done();
             });
         });
 
@@ -169,12 +170,23 @@ describe('Database Tests', function() {
           function() {
             it('The user should now not have the channel in the array',
               async function() {
-                    await userServices.removeChannel(friendId, channelId);
+                    await channelServices.removeChannel(friendId, channelId);
 
                     let user = await userServices.findUser('id', friendId);
 
                     expect(user.channels.length).to.equal(0);
             });
+        });
+
+        describe('Remove last user from channel', function() {
+            it('should return anything but null, because no users means removal of channel',
+              async function() {
+                let response = await channelServices.removeChannel(
+                  userId, channelId);
+
+                expect(response.ok).to.equal(1);
+              }
+        )
         });
 
         after(function(done) {

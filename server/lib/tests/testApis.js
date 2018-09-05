@@ -14,6 +14,8 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 
 var _mocha = _interopRequireDefault(require("mocha"));
 
+var _deepEqual = _interopRequireDefault(require("deep-equal"));
+
 var _chai = require("chai");
 
 var _config = require("../config.js");
@@ -87,15 +89,15 @@ describe('Database Tests', function () {
         (0, _chai.expect)(request.name).to.equal('Channel');
       });
     });
-    describe('Finds User in Database', function () {
+    describe('Finds Channel in Database', function () {
       it('This should get the same user back from the database', async function () {
         let request = await _channelsServices.default.getChannel(channelId);
         (0, _chai.expect)(request.name).to.equal('Channel');
       });
     });
-    describe('Delete User in Database', function () {
+    describe('Delete Channel in Database', function () {
       it('This should delete the user from the database', async function () {
-        let response = await _channelsServices.default.removeChannel(channelId, userId);
+        let response = await _channelsServices.default.removeChannel(userId, channelId);
         (0, _chai.expect)(response.ok).to.equal(1);
       });
     });
@@ -134,9 +136,15 @@ describe('Database Tests', function () {
     });
     describe('Removes friend from channel', function () {
       it('The user should now not have the channel in the array', async function () {
-        await _userServices.default.removeChannel(friendId, channelId);
+        await _channelsServices.default.removeChannel(friendId, channelId);
         let user = await _userServices.default.findUser('id', friendId);
         (0, _chai.expect)(user.channels.length).to.equal(0);
+      });
+    });
+    describe('Remove last user from channel', function () {
+      it('should return anything but null, because no users means removal of channel', async function () {
+        let response = await _channelsServices.default.removeChannel(userId, channelId);
+        (0, _chai.expect)(response.ok).to.equal(1);
       });
     });
     after(function (done) {

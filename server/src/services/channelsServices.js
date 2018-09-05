@@ -6,7 +6,7 @@ import logger from '../config.js';
 let log = logger.log;
 
 /* Add channel from user.
-// Explanation: This creates a new channel and
+//  Explanation: This creates a new channel and
  adds it to the ownership of the user.
 */
 async function createChannel(userName, userId, channelName) {
@@ -25,8 +25,8 @@ async function createChannel(userName, userId, channelName) {
 // Get channel from channel objectId.
 async function getChannel(channelId) {
     try {
-        let channel = await channelSchema.findOne({_id: channelId});
-        return channel;
+        let channelRequest = await channelSchema.findOne({_id: channelId});
+        return channelRequest;
     } catch(e) {
         log.error(e);
         return e;
@@ -35,12 +35,12 @@ async function getChannel(channelId) {
 
 // Get channel from channel objectId.
 // It recieves a channelId and a userId for the one deleting it.
-async function removeChannel(channelId, userId) {
+async function removeChannel(userId, channelId) {
     try {
         let response = null;
-        await userSchema.removeChannel(userId);
+        await userSchema.removeChannel(userId, channelId);
         let channel = await getChannel(channelId);
-        if (channel.members-1 === 0) response = await channelSchema.deleteOne({_id: channelId});
+        if (channel.members === 0) response = await channelSchema.deleteOne({_id: channelId});
         return response;
     } catch(e){
         log.error(e);

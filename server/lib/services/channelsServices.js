@@ -17,7 +17,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 let log = _config.default.log;
 /* Add channel from user.
-// Explanation: This creates a new channel and
+//  Explanation: This creates a new channel and
  adds it to the ownership of the user.
 */
 
@@ -40,10 +40,10 @@ async function createChannel(userName, userId, channelName) {
 
 async function getChannel(channelId) {
   try {
-    let channel = await _channelModel.default.findOne({
+    let channelRequest = await _channelModel.default.findOne({
       _id: channelId
     });
-    return channel;
+    return channelRequest;
   } catch (e) {
     log.error(e);
     return e;
@@ -52,12 +52,12 @@ async function getChannel(channelId) {
 // It recieves a channelId and a userId for the one deleting it.
 
 
-async function removeChannel(channelId, userId) {
+async function removeChannel(userId, channelId) {
   try {
     let response = null;
-    await _userServices.default.removeChannel(userId);
+    await _userServices.default.removeChannel(userId, channelId);
     let channel = await getChannel(channelId);
-    if (channel.members - 1 === 0) response = await _channelModel.default.deleteOne({
+    if (channel.members === 0) response = await _channelModel.default.deleteOne({
       _id: channelId
     });
     return response;
