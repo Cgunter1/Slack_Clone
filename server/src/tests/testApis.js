@@ -10,7 +10,11 @@ import {log} from '../config.js';
 import { doesNotReject } from 'assert';
 import { isBuffer } from 'util';
 
-
+/**********************************
+Go Back Through the services and see
+if you could opitimize them with 
+Promise.all().
+***********************************/
 // This file is for testing out the services.
 // This is the link to the Slack Clone's Mongo Database. The username
 // and password are on a different file, so no peeking...
@@ -103,7 +107,7 @@ describe('Database Tests', function() {
         describe('Delete Channel in Database', function() {
             it('This should delete the user from the database',
               async function() {
-                let response = await channelServices.removeChannel(userId, channelId);
+                let response = await channelServices.removeChannel(userId, channelId, false);
                 expect(response.ok).to.equal(1);
             });
         });
@@ -170,7 +174,7 @@ describe('Database Tests', function() {
           function() {
             it('The user should now not have the channel in the array',
               async function() {
-                    await channelServices.removeChannel(friendId, channelId);
+                    await channelServices.removeChannel(friendId, channelId, false);
 
                     let user = await userServices.findUser('id', friendId);
 
@@ -182,11 +186,10 @@ describe('Database Tests', function() {
             it('should return anything but null, because no users means removal of channel',
               async function() {
                 let response = await channelServices.removeChannel(
-                  userId, channelId);
+                  userId, channelId, false);
 
                 expect(response.ok).to.equal(1);
-              }
-        )
+            });
         });
 
         after(function(done) {
@@ -204,7 +207,79 @@ describe('Database Tests', function() {
     });
 
     describe('Test#4: UserService: Friend Interactions', function() {
+        let userId;
+        let friendId;
         before(function(done) {
+            Promise.all([
+            userServices.createUser(
+                'email654@gmail.com',
+                'Cinefiled',
+                '123password'),
+            userServices.createUser(
+                'Mail@gmail.com',
+                'Cgunter',
+                '123password')]
+            ).then(function(res) {
+                userId = res[0]._id;
+                friendId = res[1]._id;
+                done();
+            });
+        });
+
+        describe('Add Friend to User', function() {
+            it('Should add the friend to the user\'s friends list',
+              async function() {
+                await userServices.addFriend('Cinefiled', userId, 'Cgunter');
+                let user = await userServices.findUser('id', userId);
+                let friend = await userServices.findUser('id', friendId);
+                console.log(friend);
+                let channel = await channelServices.getChannel(user.friends[0].id);
+                expect(user.friends[0].name).to.equal('Cgunter');
+                expect(user.friends[0].id).to.deep.equal(friend.friends[0].id);
+                expect(channel.members).to.equal(2);
+            });
+        });
+
+        describe('Remove Friend from User', function() {
+            it('Should remove the friend from the user\'s friends list',
+              async function() {
+                let name;
+                let id;
+                let user = await userServices.findUser('id', userId);
+                let friendChannel = user.friends.filter(
+                  (friend) => friend.name === 'Cgunter');
+                ({name, id: id} = friendChannel[0]);
+                await userServices.removeFriend(userId, name, id);
+                user = await userServices.findUser('id', userId);
+                let friend = await userServices.findUser('id', friendId);
+                console.log(friend._id);
+                let channel = await channelServices.getChannel(id);
+                expect(user.friends.length).to.equal(0);
+                expect(friend.friends.length).to.equal(0);
+                expect(channel).to.equal(null);
+            });
+        });
+
+        after(function(done) {
+            Promise.all([
+                userServices.deleteUser({
+                    email: 'email654@gmail.com',
+                    username: 'Cinefiled',
+                    }),
+                userServices.deleteUser({
+                    email: 'Mail@gmail.com',
+                    username: 'Cgunter',
+                })]
+                ).then((res) => done());
+        });
+    });
+    describe('Test#5: MessageService: ', function() {
+        let userId;
+        let friendId;
+        let channelId;
+        let messageId;
+        before(function(done) {
+            this.timeout(10000);
             Promise.all([
             userServices.createUser(
                 'email@gmail.com',
@@ -214,13 +289,39 @@ describe('Database Tests', function() {
                 'email123@gmail.com',
                 'Cgunter',
                 '123password')]
-            ).then((res) => done());
+            ).then(async function(res) {         
+                userId = res[0]._id;
+                friendId = res[1]._id;
+                let result = await channelServices.createChannel(
+                    'Cinefiled', userId, 'Blank', false);
+                channelId = result._id;
+                await userServices.addPersonToChannel(
+                  channelId, 'Blank', friendId);
+                done();
+            });
         });
 
-        describe('Add Friend to ', function() {
-            it('This should delete the user from the database',
+        describe('Post and Find Message', function() {
+            it('Should post a message to the message\'s collection',
               async function() {
-                expect(1).to.equal(1);
+                await messageServices.createMessage(
+                    channelId, 'Cinefiled', 'Hello World!');
+                let result = await messageServices.findMessages(channelId);
+                let channelResult = await channelServices.getChannel(
+                  channelId);
+                messageId = result[0]._id;
+                expect(result[0].message).to.equal('Hello World!');
+                expect(channelResult._id).to.deep.equal(result[0].channel_id);
+            });
+        });
+
+        describe('Delete Message', function() {
+            it('Should post a delete the message',
+              async function() {
+                await messageServices.removeMessage(messageId);
+                let result = await messageServices.findMessages(channelId);
+                console.log(result);
+                expect(result.length).to.equal(0);
             });
         });
 
@@ -234,7 +335,10 @@ describe('Database Tests', function() {
                     email: 'email123@gmail.com',
                     username: 'Cgunter',
                 })]
-                ).then((res) => done());
+                ).then(async (res) => {
+                    channelServices.removeChannel(userId, channelId, true);
+                    done();
+                });
         });
     });
     after(function(done) {

@@ -25,16 +25,21 @@ async function addPersonToChannel(channelId, channelName, personId){
   }
 }
 
-async function removeChannel(userId, channelId){
+async function removeChannel(userId, channelId, isFriendChannel){
   let user = await findUser('id', userId);
   let channel = await channelService.getChannel(channelId);
   let newChannel = [];
-  for(let channel1 of user.channels) {
-    if(!deepEqual(channel1.id, channelId)) {
-      newChannel.push(channel1);
+  let channelType = (isFriendChannel? user.friends: user.channels);
+  for(let channel of channelType) {
+    if(!deepEqual(channel.id, channelId)) {
+      newChannel.push(channel);
     }
+  } 
+  if(isFriendChannel){
+    user.friends = newChannel;
+  } else {
+    user.channels = newChannel;
   }
-  user.channels = newChannel;
   await user.save();
   if(channel) {
     --channel.members;
@@ -42,6 +47,7 @@ async function removeChannel(userId, channelId){
   }
   return null;
 }
+
 
 // Deletes the User from the database from whatever info that is provided.
 async function deleteUser(personInfo){
@@ -89,11 +95,14 @@ async function addFriend(userName, userId, friendName){
     try{
         let user = await findUser('id', userId);
         let friend = await findUser('name', friendName);
-        let channel = await channelService.createChannel(userName, userId, friendName);
+        let channel = await channelService.createChannel(
+          userName, userId, friendName, true);
+        ++channel.members;
         user.friends.push({name: friend.username, id: channel._id});
         friend.friends.push({name: user.username, id: channel._id});
         await user.save();
         await friend.save();
+        await channel.save();
     }catch(e){
         log.error(e);
     }
@@ -105,13 +114,24 @@ async function addFriend(userName, userId, friendName){
 // channels objectId.
 async function removeFriend(userId, channelName, channelId){
   try{
-      let user = await userSchema.findById(userId);
-      let friend = await userSchema.find({name: channelName});
-      await channelService.removeChannel(channelId);
-      user.friends.filter(person => person.name !== friend.username);
-      friend.friends.filter(person => person.name !== user.username);
-      await user.save();
-      await friend.save();
+      let user = await findUser('id', userId);
+      let friend = await findUser('name', channelName);
+      console.log(friend._id);
+      await channelService.removeChannel(userId, channelId, true);
+      let userFriends = [];
+      let friendFriends = [];
+      for(let person of user.friends) {
+        if (person.name !== friend.username) userFriends.push(person);
+      }
+      for(let person of friend.friends) {
+        if (person.name !== user.username) friendFriends.push(person);
+      }
+      user.friends = userFriends;
+      friend.friends = friendFriends;
+      let response = await friend.save();
+      let response2 = await user.save();
+      console.log(response);
+      console.log(response2);
   }catch(e){
       log.error(e);
   }

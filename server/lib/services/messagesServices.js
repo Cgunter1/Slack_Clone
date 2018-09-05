@@ -11,12 +11,13 @@ var _MessageModel = _interopRequireDefault(require("../models/MessageModel.js"))
 
 var _channelsServices = _interopRequireDefault(require("./channelsServices.js"));
 
-var _config = require("../config.js");
+var _config = _interopRequireDefault(require("../config.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Find messages by channelId.
+let log = _config.default.log; // Find messages by channelId.
 // Returns message Array
+
 async function findMessages(channelId) {
   try {
     let messages = await _MessageModel.default.find({
@@ -24,26 +25,26 @@ async function findMessages(channelId) {
     });
     return messages;
   } catch (e) {
-    _config.log.error(e);
+    log.error(e);
   }
 } // Creates Message on channel_id.
 
 
-async function createMeassage(channelId, userName, message) {
+async function createMessage(channelId, userName, message) {
   try {
-    let messages = await _MessageModel.default.insert({
+    let messages = new _MessageModel.default({
       channel_id: channelId,
       username: userName,
       message: message,
       date: Date.now()
-    }); // Updates the time of the channel last written to.
+    });
+    await messages.save(); // Updates the time of the channel last written to.
 
     let channel = await _channelsServices.default.getChannel(channelId);
     channel.date = Date.now();
     await channel.save();
-    return messages;
   } catch (e) {
-    _config.log.error(e);
+    log.error(e);
   }
 } // Delete messages by message_id.
 
@@ -54,12 +55,13 @@ async function removeMessage(messageId) {
       _id: messageId
     });
   } catch (e) {
-    _config.log.error(e);
+    log.error(e);
   }
 }
 
 var _default = {
   findMessages,
+  createMessage,
   removeMessage
 };
 exports.default = _default;
