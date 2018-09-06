@@ -13,7 +13,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // This is the salt that will be used with the bcrypt function
 // and password to create a hash.
-const SALT_FACTOR = 10; // This is the schema for the user collection of the MongoDB.
+const SALT_FACTOR = 10;
+/**
+- Possibly Add Phone Number or Email, if the person forgets password.
+- And Security Questions.
+- Token property that will take the objectId for the token object.
+- Timeout Property that keeps a data to timeout from.
+    - The timeout property is to stop any reoffenders from an account.
+**/
+// This is the schema for the user collection of the MongoDB.
 
 const userSchema = new _mongoose.default.Schema({
   username: String,

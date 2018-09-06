@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import messageRouter from './api/message_api.js';
 import userRouter from './api/user_api.js';
+import channelRouter from './api/channel_api.js';
 import log from './config.js';
 import credentials from '../../secretUsernamePassword.js';
 import mongoose from 'mongoose';
@@ -32,9 +33,9 @@ app.use((req, res, next) => {
 });
 
 
-// For any urls that are /message or /user
-app.use('/message', messageRouter);
+// For any urls that are /channel or /user
 app.use('/user', userRouter);
+app.use('/channel', channelRouter);
 
 // If it is not in the message router or user router
 // then it is an erroneous error.
