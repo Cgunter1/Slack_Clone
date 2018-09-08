@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import messageRouter from './api/message_api.js';
+// import messageRouter from './api/message_api.js';
 import userRouter from './api/user_api.js';
 import channelRouter from './api/channel_api.js';
 import log from './config.js';

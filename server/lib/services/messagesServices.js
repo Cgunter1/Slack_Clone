@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _mongoose = _interopRequireDefault(require("mongoose"));
-
 var _MessageModel = _interopRequireDefault(require("../models/MessageModel.js"));
 
 var _channelsServices = _interopRequireDefault(require("./channelsServices.js"));
@@ -15,8 +13,15 @@ var _config = _interopRequireDefault(require("../config.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-let log = _config.default.log; // Find messages by channelId.
-// Returns message Array
+/* eslint-disable */
+
+/* eslint-enable */
+let log = _config.default.log;
+/**
+ * Find messages by channelId.
+ * @param {number} channelId Id of the channel that the messages belong to.
+ * @return {array} Returns message Array.
+ */
 
 async function findMessages(channelId) {
   try {
@@ -27,12 +32,20 @@ async function findMessages(channelId) {
   } catch (e) {
     log.error(e);
   }
-} // Creates Message on channel_id.
+}
+/**
+ * Creates Message on channel_id.
+ * @param {number} channelId Id of the channel that the new message belongs to.
+ * @param {string} userName Name of the user that submitted the message.
+ * @param {string} message Contents of the message.
+ */
 
 
 async function createMessage(channelId, userName, message) {
   try {
+    /* eslint-disable */
     let messages = new _MessageModel.default({
+      /* eslint-enable */
       channel_id: channelId,
       username: userName,
       message: message,
@@ -46,7 +59,12 @@ async function createMessage(channelId, userName, message) {
   } catch (e) {
     log.error(e);
   }
-} // Delete messages by message_id.
+}
+/**
+ * Delete messages by message_id.
+ * @param {number} messageId is the id of the message that is going
+ * to be deleted.
+*/
 
 
 async function removeMessage(messageId) {

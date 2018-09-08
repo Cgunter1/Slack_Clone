@@ -1,6 +1,6 @@
 // This will be the api that will serve the messages from the MongoDB database.
 import express from 'express';
-import jwtAuth from '../user-auth/jwtauth.js';
+// import jwtAuth from '../user-auth/jwtauth.js';
 // import bodyParser from 'body-parser';
 
 const router = express.Router();
@@ -21,16 +21,12 @@ const router = express.Router();
 // Ask them security questions.
 // If they pass, ask them for their phone number.
     // Like for example, (***) *** -**29
-router.post('/updatePassword_Questions_PhoneNumber', (req, res) => {
-    
-});
+router.post('/updatePassword_Questions_PhoneNumber', (req, res) => {});
 
 // After that, create a token on the database that
 // will expire after a day. The token will be sent
 // either through SMS or email using Twilio.
-router.post('/updatePassword_token', (req, res) => {
-    
-});
+router.post('/updatePassword_token', (req, res) => {});
 
 // This route creates the user.
 // Accepts username, email, and password.
@@ -47,7 +43,7 @@ router.post('/newUser', (req, res) => {
 // If correct, it will return a jwt.
 router.post('/login', (req, res) => {
     // Check login.
-    let user;
+    // let user;
     // If true?,
 
 });

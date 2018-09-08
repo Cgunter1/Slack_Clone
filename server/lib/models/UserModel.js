@@ -35,7 +35,7 @@ const userSchema = new _mongoose.default.Schema({
     name: String,
     id: _mongoose.default.Schema.Types.ObjectId
   }],
-  // The channels array for are there to verify if the user has 
+  // The channels array for are there to verify if the user has
   // access to the other channels.
   friends: [{
     name: String,
@@ -47,7 +47,10 @@ const userSchema = new _mongoose.default.Schema({
 // saving the user password to the Mongo Database.
 
 userSchema.pre('save', function (next) {
+  /* eslint-disable */
   const user = this;
+  /* eslint-enable */
+
   if (!user.isModified('password')) return next();
   return _bcrypt.default.genSalt(SALT_FACTOR, function (err, salt) {
     return _bcrypt.default.hash(user.password, salt, function (err, hash) {

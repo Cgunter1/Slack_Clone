@@ -2,7 +2,7 @@ import jwtAuth from './jwtauth.js';
 
 let user = {
     username: 'Chris',
-    email: 'email@gmail.com'
+    email: 'email@gmail.com',
 };
 
 let date = Date.now();

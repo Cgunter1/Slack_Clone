@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
         default: Date.now(),
     },
     channels: [{name: String, id: mongoose.Schema.Types.ObjectId}],
-    // The channels array for are there to verify if the user has 
+    // The channels array for are there to verify if the user has
     // access to the other channels.
     friends: [{name: String, id: mongoose.Schema.Types.ObjectId}],
     // The friends array is there to keep track of the name of the
@@ -32,7 +32,9 @@ const userSchema = new mongoose.Schema({
 // This remembers to hash the password with bcrypt before
 // saving the user password to the Mongo Database.
 userSchema.pre('save', function(next) {
+  /* eslint-disable */
   const user = this;
+  /* eslint-enable */
   if (!user.isModified('password')) return next();
   return bcrypt.genSalt(SALT_FACTOR, function(err, salt) {
     return bcrypt.hash(user.password, salt,

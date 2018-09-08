@@ -1,17 +1,23 @@
-import mongoose from 'mongoose';
+/* eslint-disable */
 import userSchema from '../models/UserModel.js';
 import channelService from './channelsServices.js';
 import logger from '../config.js';
 import deepEqual from 'deep-equal';
+/* eslint-enable */
 
 let log = logger.log;
-
-// Add user to channel.
-// Explanation: Basically this goes to the userSchema and finds
-// the user that the current user wants to add, if the user finds
-// him, the current channelId is added to that user's channels.
-async function addPersonToChannel(channelId, channelName, personId){
-  try{
+/**
+ * Add user to channel.
+ * Explanation: Basically this goes to the userSchema and finds
+ * the user that the current user wants to add, if the user finds
+ * him, the current channelId is added to that user's channels.
+ * @param {number} channelId The id of the channel.
+ * @param {string} channelName The name of the channel.
+ * @param {number} personId The id of the person to add.
+ * @return {error} Returns error if there is a problem with the insertion.
+ */
+async function addPersonToChannel(channelId, channelName, personId) {
+  try {
     let user = await userSchema.findById(personId);
     let channel = await channelService.getChannel(channelId);
     user.channels.push({name: channelName, id: channelId});
@@ -19,68 +25,95 @@ async function addPersonToChannel(channelId, channelName, personId){
     await channel.save();
     await user.save();
     log.info(`Logged ${channelName} into ${user.username}`);
-  }catch(e){
-    log.error(e)
+  } catch (e) {
+    log.error(e);
     return e;
   }
 }
 
-async function removeChannel(userId, channelId, isFriendChannel){
+/**
+ * Removes a channel from a user's array of channels.
+ * @param {number} userId The id of the channel.
+ * @param {number} channelId The id of the channel.
+ * @param {boolean} isFriendChannel Bool of type of channel.
+ * @return {null} Returns null when finished.
+ */
+async function removeChannel(userId, channelId, isFriendChannel) {
   let user = await findUser('id', userId);
   let channel = await channelService.getChannel(channelId);
   let newChannel = [];
   let channelType = (isFriendChannel? user.friends: user.channels);
-  for(let channel of channelType) {
-    if(!deepEqual(channel.id, channelId)) {
+  for (let channel of channelType) {
+    if (!deepEqual(channel.id, channelId)) {
       newChannel.push(channel);
     }
-  } 
-  if(isFriendChannel){
+  }
+  if (isFriendChannel) {
     user.friends = newChannel;
   } else {
     user.channels = newChannel;
   }
   await user.save();
-  if(channel) {
+  if (channel) {
     --channel.members;
     await channel.save();
   }
   return null;
 }
 
-
-// Deletes the User from the database from whatever info that is provided.
-async function deleteUser(personInfo){
-  try{
+/**
+ * Deletes the User from the database from whatever info that is provided.
+ * @param {object} personInfo Any kind of info on user to delete.
+ * @return {object} Returns either returns a response object if
+ * successful and error if not.
+ */
+async function deleteUser(personInfo) {
+  try {
     let request = userSchema.deleteOne(personInfo);
     return request;
-  } catch(e){
+  } catch (e) {
     log.error(e);
     return e;
   }
 }
 
-// This is for creating the user.
-async function createUser(userEmail, userName, userPassword){
-  try{
-    let user = new userSchema({username: userName, password: userPassword, email: userEmail});
+/**
+ * This is for creating the user.
+ * @param {string} userEmail The email of the user.
+ * @param {string} userName The name of the user.
+ * @param {string} userPassword The password of the user to add.
+ * @return {object} Returns user schema if successful or error object
+ * if not successful.
+ */
+async function createUser(userEmail, userName, userPassword) {
+  try {
+    /* eslint-disable */
+    let user = new userSchema({ 
+    /* eslint-enable */
+      username: userName,
+      password: userPassword,
+      email: userEmail});
     return await user.save();
-  } catch(e){
+  } catch (e) {
     log.error(e);
     return e;
   }
 }
 
-// After every friend is added to the user, a new channel will be created
-// for them with the friend's name as the title.
-
+/**
+ * After every friend is added to the user, a new channel will be created
+ * for them with the friend's name as the title.
+ * @param {string} query Type of value to search id/username.
+ * @param {string} value Value of the query. (String or Number)
+ * @return {object} Returns user object or error object.
+ */
 async function findUser(query, value) {
   try {
     let user;
-    if(query === 'id') user = await userSchema.findById(value);
-    if(query === 'name') user = await userSchema.findOne({username: value});
+    if (query === 'id') user = await userSchema.findById(value);
+    if (query === 'name') user = await userSchema.findOne({username: value});
     return user;
-  } catch(e) {
+  } catch (e) {
     return e;
   }
 }
@@ -91,8 +124,14 @@ async function findUser(query, value) {
 // *******************************************************
 // *** Don't forget to increment channel members by 1. ***
 // *******************************************************
-async function addFriend(userName, userId, friendName){
-    try{
+/**
+ * This is for creating the user.
+ * @param {string} userName Name of user that is friending.
+ * @param {number} userId Id of user that is friending.
+ * @param {string} friendName Name of person to friend.
+ */
+async function addFriend(userName, userId, friendName) {
+    try {
         let user = await findUser('id', userId);
         let friend = await findUser('name', friendName);
         let channel = await channelService.createChannel(
@@ -103,27 +142,31 @@ async function addFriend(userName, userId, friendName){
         await user.save();
         await friend.save();
         await channel.save();
-    }catch(e){
+    } catch (e) {
         log.error(e);
     }
 }
 
-
-// Remove friend. Arguments: Username, friendName and friendObjectId
-// Explanation: Removes the friend from the friends array and objectid from
-// channels objectId.
-async function removeFriend(userId, channelName, channelId){
-  try{
+/**
+ * Removes the friend from the friends array and objectid from
+ * channels objectId..
+ * @param {number} userId Id of the user that is removing the friend.
+ * @param {string} channelName Name of the friend and channel to remove.
+ * @param {number} channelId Id of the channel that both users
+ * are connnected to.
+ */
+async function removeFriend(userId, channelName, channelId) {
+  try {
       let user = await findUser('id', userId);
       let friend = await findUser('name', channelName);
       console.log(friend._id);
       await channelService.removeChannel(userId, channelId, true);
       let userFriends = [];
       let friendFriends = [];
-      for(let person of user.friends) {
+      for (let person of user.friends) {
         if (person.name !== friend.username) userFriends.push(person);
       }
-      for(let person of friend.friends) {
+      for (let person of friend.friends) {
         if (person.name !== user.username) friendFriends.push(person);
       }
       user.friends = userFriends;
@@ -132,30 +175,39 @@ async function removeFriend(userId, channelName, channelId){
       let response2 = await user.save();
       console.log(response);
       console.log(response2);
-  }catch(e){
+  } catch (e) {
       log.error(e);
   }
 }
 
-// Get all channels and friends from user_id.
-async function getUserChannels(userId){
-  try{
+/**
+ * Get all channels and friends from user_id.
+ * @param {number} userId Id of the user that is requesting
+ * all the channels of theirs.
+ * are connnected to.
+ */
+async function getUserChannels(userId) {
+  try {
     let user = await userSchema.findById(userId);
     return [user.channels, user.friends];
-  }catch(e){
+  } catch (e) {
     log.error(e);
   }
 }
 
-// Add new channel to user. This is in response to
-// the channelService createChannel.
-// Adds new channel name and id to array.
-async function addChannel(channelName, channelId, userId){
-  try{
+/**
+ * Add new channel to user. This is in response to
+ * the channelService createChannel.
+ * @param {string} channelName Name of the channel that is being added.
+ * @param {number} channelId Id of the channel that is being added.
+ * @param {number} userId Id of the user that is adding the channel.x
+ */
+async function addChannel(channelName, channelId, userId) {
+  try {
     let user = await userSchema.findById(userId);
     user.channels.push({name: channelName, id: channelId});
     await user.save();
-  } catch(e){
+  } catch (e) {
     log.error(e);
   }
 }

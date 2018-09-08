@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _mongoose = _interopRequireDefault(require("mongoose"));
-
 var _UserModel = _interopRequireDefault(require("../models/UserModel.js"));
 
 var _channelsServices = _interopRequireDefault(require("./channelsServices.js"));
@@ -17,10 +15,20 @@ var _deepEqual = _interopRequireDefault(require("deep-equal"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-let log = _config.default.log; // Add user to channel.
-// Explanation: Basically this goes to the userSchema and finds
-// the user that the current user wants to add, if the user finds
-// him, the current channelId is added to that user's channels.
+/* eslint-disable */
+
+/* eslint-enable */
+let log = _config.default.log;
+/**
+ * Add user to channel.
+ * Explanation: Basically this goes to the userSchema and finds
+ * the user that the current user wants to add, if the user finds
+ * him, the current channelId is added to that user's channels.
+ * @param {number} channelId The id of the channel.
+ * @param {string} channelName The name of the channel.
+ * @param {number} personId The id of the person to add.
+ * @return {error} Returns error if there is a problem with the insertion.
+ */
 
 async function addPersonToChannel(channelId, channelName, personId) {
   try {
@@ -39,6 +47,14 @@ async function addPersonToChannel(channelId, channelName, personId) {
     return e;
   }
 }
+/**
+ * Removes a channel from a user's array of channels.
+ * @param {number} userId The id of the channel.
+ * @param {number} channelId The id of the channel.
+ * @param {boolean} isFriendChannel Bool of type of channel.
+ * @return {null} Returns null when finished.
+ */
+
 
 async function removeChannel(userId, channelId, isFriendChannel) {
   let user = await findUser('id', userId);
@@ -66,7 +82,13 @@ async function removeChannel(userId, channelId, isFriendChannel) {
   }
 
   return null;
-} // Deletes the User from the database from whatever info that is provided.
+}
+/**
+ * Deletes the User from the database from whatever info that is provided.
+ * @param {object} personInfo Any kind of info on user to delete.
+ * @return {object} Returns either returns a response object if
+ * successful and error if not.
+ */
 
 
 async function deleteUser(personInfo) {
@@ -78,12 +100,22 @@ async function deleteUser(personInfo) {
     log.error(e);
     return e;
   }
-} // This is for creating the user.
+}
+/**
+ * This is for creating the user.
+ * @param {string} userEmail The email of the user.
+ * @param {string} userName The name of the user.
+ * @param {string} userPassword The password of the user to add.
+ * @return {object} Returns user schema if successful or error object
+ * if not successful.
+ */
 
 
 async function createUser(userEmail, userName, userPassword) {
   try {
+    /* eslint-disable */
     let user = new _UserModel.default({
+      /* eslint-enable */
       username: userName,
       password: userPassword,
       email: userEmail
@@ -93,8 +125,14 @@ async function createUser(userEmail, userName, userPassword) {
     log.error(e);
     return e;
   }
-} // After every friend is added to the user, a new channel will be created
-// for them with the friend's name as the title.
+}
+/**
+ * After every friend is added to the user, a new channel will be created
+ * for them with the friend's name as the title.
+ * @param {string} query Type of value to search id/username.
+ * @param {string} value Value of the query. (String or Number)
+ * @return {object} Returns user object or error object.
+ */
 
 
 async function findUser(query, value) {
@@ -114,6 +152,13 @@ async function findUser(query, value) {
 // *******************************************************
 // *** Don't forget to increment channel members by 1. ***
 // *******************************************************
+
+/**
+ * This is for creating the user.
+ * @param {string} userName Name of user that is friending.
+ * @param {number} userId Id of user that is friending.
+ * @param {string} friendName Name of person to friend.
+ */
 
 
 async function addFriend(userName, userId, friendName) {
@@ -136,9 +181,15 @@ async function addFriend(userName, userId, friendName) {
   } catch (e) {
     log.error(e);
   }
-} // Remove friend. Arguments: Username, friendName and friendObjectId
-// Explanation: Removes the friend from the friends array and objectid from
-// channels objectId.
+}
+/**
+ * Removes the friend from the friends array and objectid from
+ * channels objectId..
+ * @param {number} userId Id of the user that is removing the friend.
+ * @param {string} channelName Name of the friend and channel to remove.
+ * @param {number} channelId Id of the channel that both users
+ * are connnected to.
+ */
 
 
 async function removeFriend(userId, channelName, channelId) {
@@ -167,7 +218,13 @@ async function removeFriend(userId, channelName, channelId) {
   } catch (e) {
     log.error(e);
   }
-} // Get all channels and friends from user_id.
+}
+/**
+ * Get all channels and friends from user_id.
+ * @param {number} userId Id of the user that is requesting
+ * all the channels of theirs.
+ * are connnected to.
+ */
 
 
 async function getUserChannels(userId) {
@@ -177,9 +234,14 @@ async function getUserChannels(userId) {
   } catch (e) {
     log.error(e);
   }
-} // Add new channel to user. This is in response to
-// the channelService createChannel.
-// Adds new channel name and id to array.
+}
+/**
+ * Add new channel to user. This is in response to
+ * the channelService createChannel.
+ * @param {string} channelName Name of the channel that is being added.
+ * @param {number} channelId Id of the channel that is being added.
+ * @param {number} userId Id of the user that is adding the channel.x
+ */
 
 
 async function addChannel(channelName, channelId, userId) {

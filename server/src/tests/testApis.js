@@ -3,18 +3,18 @@ import userServices from '../services/userServices.js';
 import messageServices from '../services/messagesServices.js';
 import credentials from '../../../secretUsernamePassword.js';
 import mongoose from 'mongoose';
-import mocha from 'mocha';
-import deepEqual from 'deep-equal';
+// import mocha from 'mocha';
+// import deepEqual from 'deep-equal';
 import {expect} from 'chai';
-import {log} from '../config.js';
-import { doesNotReject } from 'assert';
-import { isBuffer } from 'util';
+// import {log} from '../config.js';
+// import { doesNotReject } from 'assert';
+// import { isBuffer } from 'util';
 
-/**********************************
+/**
 Go Back Through the services and see
-if you could opitimize them with 
+if you could opitimize them with
 Promise.all().
-***********************************/
+**/
 // This file is for testing out the services.
 // This is the link to the Slack Clone's Mongo Database. The username
 // and password are on a different file, so no peeking...
@@ -22,10 +22,9 @@ const url = `mongodb://${credentials.mongoUsername}:${credentials.mongoPassword}
 
 // This establishes the logging I will be using over this project,
 // which is bunyan.
-const logger = log;
+// const logger = log;
 
 describe('Database Tests', function() {
-
     before(function(done) {
         mongoose.connect(url, {useNewUrlParser: true});
         mongoose.connection.once('connected', function() {
@@ -33,7 +32,7 @@ describe('Database Tests', function() {
         });
     });
     // Checks if the user can be inserted, found, and removed from the database.
-    describe('Test#1: UserService: Creating, Retrieving, and Deleting Users', 
+    describe('Test#1: UserService: Creating, Retrieving, and Deleting Users',
       function() {
         describe('Adds User to database', function() {
             it('This should post a new user to the database.',
@@ -107,7 +106,8 @@ describe('Database Tests', function() {
         describe('Delete Channel in Database', function() {
             it('This should delete the user from the database',
               async function() {
-                let response = await channelServices.removeChannel(userId, channelId, false);
+                let response = await channelServices.removeChannel(
+                  userId, channelId, false);
                 expect(response.ok).to.equal(1);
             });
         });
@@ -143,7 +143,7 @@ describe('Database Tests', function() {
 
         describe('Creates Channel and adds it to User array of Channel',
           function() {
-            it('Should return the user array of channels that includes a new Channel',
+            it('Should add a new Channel to user channel array',
               async function() {
                     let channelRequest = await channelServices.createChannel(
                         'Cinefiled!',
@@ -174,7 +174,8 @@ describe('Database Tests', function() {
           function() {
             it('The user should now not have the channel in the array',
               async function() {
-                    await channelServices.removeChannel(friendId, channelId, false);
+                    await channelServices.removeChannel(
+                      friendId, channelId, false);
 
                     let user = await userServices.findUser('id', friendId);
 
@@ -183,7 +184,7 @@ describe('Database Tests', function() {
         });
 
         describe('Remove last user from channel', function() {
-            it('should return anything but null, because no users means removal of channel',
+            it('should not return null, because last member is removed',
               async function() {
                 let response = await channelServices.removeChannel(
                   userId, channelId, false);
@@ -233,7 +234,8 @@ describe('Database Tests', function() {
                 let user = await userServices.findUser('id', userId);
                 let friend = await userServices.findUser('id', friendId);
                 console.log(friend);
-                let channel = await channelServices.getChannel(user.friends[0].id);
+                let channel = await channelServices.getChannel(
+                  user.friends[0].id);
                 expect(user.friends[0].name).to.equal('Cgunter');
                 expect(user.friends[0].id).to.deep.equal(friend.friends[0].id);
                 expect(channel.members).to.equal(2);
@@ -279,7 +281,6 @@ describe('Database Tests', function() {
         let channelId;
         let messageId;
         before(function(done) {
-            this.timeout(10000);
             Promise.all([
             userServices.createUser(
                 'email@gmail.com',
@@ -289,7 +290,7 @@ describe('Database Tests', function() {
                 'email123@gmail.com',
                 'Cgunter',
                 '123password')]
-            ).then(async function(res) {         
+            ).then(async function(res) {
                 userId = res[0]._id;
                 friendId = res[1]._id;
                 let result = await channelServices.createChannel(
@@ -342,6 +343,6 @@ describe('Database Tests', function() {
         });
     });
     after(function(done) {
-        mongoose.connection.close(() => done());
+        mongoose.connection.close(done());
     });
 });

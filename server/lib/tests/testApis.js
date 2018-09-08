@@ -12,32 +12,28 @@ var _secretUsernamePassword = _interopRequireDefault(require("../../../secretUse
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
-var _mocha = _interopRequireDefault(require("mocha"));
-
-var _deepEqual = _interopRequireDefault(require("deep-equal"));
-
 var _chai = require("chai");
-
-var _config = require("../config.js");
-
-var _assert = require("assert");
-
-var _util = require("util");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**********************************
+// import mocha from 'mocha';
+// import deepEqual from 'deep-equal';
+// import {log} from '../config.js';
+// import { doesNotReject } from 'assert';
+// import { isBuffer } from 'util';
+
+/**
 Go Back Through the services and see
-if you could opitimize them with 
+if you could opitimize them with
 Promise.all().
-***********************************/
+**/
 // This file is for testing out the services.
 // This is the link to the Slack Clone's Mongo Database. The username
 // and password are on a different file, so no peeking...
 const url = `mongodb://${_secretUsernamePassword.default.mongoUsername}:${_secretUsernamePassword.default.mongoPassword}@ds239692.mlab.com:39692/slack_clone`; // This establishes the logging I will be using over this project,
 // which is bunyan.
+// const logger = log;
 
-const logger = _config.log;
 describe('Database Tests', function () {
   before(function (done) {
     _mongoose.default.connect(url, {
@@ -125,7 +121,7 @@ describe('Database Tests', function () {
       });
     });
     describe('Creates Channel and adds it to User array of Channel', function () {
-      it('Should return the user array of channels that includes a new Channel', async function () {
+      it('Should add a new Channel to user channel array', async function () {
         let channelRequest = await _channelsServices.default.createChannel('Cinefiled!', userId, 'Channel');
         channelId = channelRequest._id;
         let user = await _userServices.default.findUser('id', userId);
@@ -147,7 +143,7 @@ describe('Database Tests', function () {
       });
     });
     describe('Remove last user from channel', function () {
-      it('should return anything but null, because no users means removal of channel', async function () {
+      it('should not return null, because last member is removed', async function () {
         let response = await _channelsServices.default.removeChannel(userId, channelId, false);
         (0, _chai.expect)(response.ok).to.equal(1);
       });
@@ -219,7 +215,6 @@ describe('Database Tests', function () {
     let channelId;
     let messageId;
     before(function (done) {
-      this.timeout(10000);
       Promise.all([_userServices.default.createUser('email@gmail.com', 'Cinefiled', '123password'), _userServices.default.createUser('email123@gmail.com', 'Cgunter', '123password')]).then(async function (res) {
         userId = res[0]._id;
         friendId = res[1]._id;
@@ -262,6 +257,6 @@ describe('Database Tests', function () {
     });
   });
   after(function (done) {
-    _mongoose.default.connection.close(() => done());
+    _mongoose.default.connection.close(done());
   });
 });
