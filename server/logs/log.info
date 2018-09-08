@@ -10,3 +10,5 @@
 {"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":16225,"level":30,"msg":"Logged Blank into Cgunter","time":"2018-09-08T08:01:25.615Z","v":0}
 {"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":16698,"level":30,"msg":"Logged Channel into Munter","time":"2018-09-08T08:58:16.113Z","v":0}
 {"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":16698,"level":30,"msg":"Logged Blank into Cgunter","time":"2018-09-08T08:58:19.731Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":17112,"level":30,"msg":"Logged Channel into Munter","time":"2018-09-08T09:16:07.765Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":17112,"level":30,"msg":"Logged Blank into Cgunter","time":"2018-09-08T09:16:11.324Z","v":0}
