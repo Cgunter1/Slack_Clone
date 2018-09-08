@@ -9,13 +9,17 @@ var _bunyan = _interopRequireDefault(require("bunyan"));
 
 var _bunyanRotatingFileStream = _interopRequireDefault(require("bunyan-rotating-file-stream"));
 
+var _redis = _interopRequireDefault(require("redis"));
+
+var _secretUsernamePassword = _interopRequireDefault(require("../../secretUsernamePassword.js"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Below sets up the logging system for the app using bunyan.
 // Any logs that are info or error are logged first to the stdout
 // then logged into each of their own files respectively.
 // After a day or a file size. The files are rolled over for the next messages.
-const options = {
+let options = {
   name: 'slack_app',
   streams: [{
     level: 'info',
@@ -48,9 +52,22 @@ const options = {
   }]
 };
 
-const log = _bunyan.default.createLogger(options);
+let log = _bunyan.default.createLogger(options);
 
+const URL = _secretUsernamePassword.default.redisUrl; // Connects to Redis Server.
+
+let redisClient = _redis.default.createClient({
+  port: 13663,
+  host: URL,
+  password: _secretUsernamePassword.default.redisPassword
+});
+
+let jwt = {
+  hashAlg: 'HS256'
+};
 var _default = {
-  log
+  log,
+  redisClient,
+  jwt
 };
 exports.default = _default;

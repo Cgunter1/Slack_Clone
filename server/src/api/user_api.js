@@ -1,5 +1,6 @@
 // This will be the api that will serve the messages from the MongoDB database.
 import express from 'express';
+import jwtAuth from '../user-auth/jwtauth.js';
 // import bodyParser from 'body-parser';
 
 const router = express.Router();
@@ -40,6 +41,15 @@ router.post('/newUser', (req, res) => {
     // to log.info.
     // The information is checked with the userId to make sure that is correct.
     // The post body is given with the userId, message, timestamp.
+});
+
+// The login will go and verify the username and password.
+// If correct, it will return a jwt.
+router.post('/login', (req, res) => {
+    // Check login.
+    let user;
+    // If true?,
+
 });
 
 export default router;

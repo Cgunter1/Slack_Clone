@@ -18,7 +18,7 @@ Promise.all().
 // This file is for testing out the services.
 // This is the link to the Slack Clone's Mongo Database. The username
 // and password are on a different file, so no peeking...
-const url = `mongodb://${credentials.username}:${credentials.password}@ds239692.mlab.com:39692/slack_clone`;
+const url = `mongodb://${credentials.mongoUsername}:${credentials.mongoPassword}@ds239692.mlab.com:39692/slack_clone`;
 
 // This establishes the logging I will be using over this project,
 // which is bunyan.

@@ -1,10 +1,13 @@
 import bunyan from 'bunyan';
 import RotatingFileSystem from 'bunyan-rotating-file-stream';
+import redis from 'redis';
+import credentials from '../../secretUsernamePassword.js';
+
 // Below sets up the logging system for the app using bunyan.
 // Any logs that are info or error are logged first to the stdout
 // then logged into each of their own files respectively.
 // After a day or a file size. The files are rolled over for the next messages.
-const options = {
+let options = {
     name: 'slack_app',
     streams: [{
         level: 'info',
@@ -42,9 +45,24 @@ const options = {
     },
     ]};
 
-const log = bunyan.createLogger(options);
+let log = bunyan.createLogger(options);
+
+const URL = credentials.redisUrl;
+
+// Connects to Redis Server.
+let redisClient = redis.createClient({
+    port: 13663,
+    host: URL,
+    password: credentials.redisPassword,
+});
+
+let jwt = {
+    hashAlg: 'HS256',
+};
 
 export default {
     log,
+    redisClient,
+    jwt,
 };
 
