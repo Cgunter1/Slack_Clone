@@ -22,7 +22,7 @@ function jwtGenerate(user, expireDate, issuedAt, secretKey) {
     jti: sha256(issuedAt + user.email),
     exp: expireDate,
   };
-  let token = jwt.sign(jPayload, 'password');
+  let token = jwt.sign(jPayload, secretKey);
   return token;
 }
 
@@ -35,10 +35,9 @@ function jwtGenerate(user, expireDate, issuedAt, secretKey) {
  */
 function jwtVerify(token, secretKey) {
     try {
-    jwt.verify(token, secretKey);
-        return true;
+        return jwt.verify(token, secretKey);
     } catch (e) {
-        return false;
+        return e;
     }
 }
 

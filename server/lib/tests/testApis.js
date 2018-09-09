@@ -8,19 +8,19 @@ var _userServices = _interopRequireDefault(require("../services/userServices.js"
 
 var _messagesServices = _interopRequireDefault(require("../services/messagesServices.js"));
 
+var _tokenService = _interopRequireDefault(require("../services/tokenService.js"));
+
 var _secretUsernamePassword = _interopRequireDefault(require("../../../secretUsernamePassword.js"));
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
+var _jwtauth = _interopRequireDefault(require("../user-auth/jwtauth.js"));
+
+var _uuid = _interopRequireDefault(require("uuid"));
+
 var _chai = require("chai");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// import mocha from 'mocha';
-// import deepEqual from 'deep-equal';
-// import {log} from '../config.js';
-// import { doesNotReject } from 'assert';
-// import { isBuffer } from 'util';
 
 /**
 Go Back Through the services and see
@@ -209,7 +209,7 @@ describe('Database Tests', function () {
       })]).then(res => done());
     });
   });
-  describe('Test#5: MessageService: ', function () {
+  describe('Test#5: MessageService', function () {
     let userId;
     let friendId;
     let channelId;
@@ -254,6 +254,36 @@ describe('Database Tests', function () {
 
         done();
       });
+    });
+  });
+  describe('Test#6: JWT Tokens', function () {
+    let user = {
+      username: 'Cinefiled',
+      email: 'cinefiled@yahoo.com'
+    };
+    let date = Date.now();
+    let expDate = date + 1000 * 600;
+    let token;
+    describe('Create Token and Add to Redis Server', function () {
+      it('Should return OK if successfully added', async function () {
+        let secretKey = _uuid.default.v4();
+
+        token = _jwtauth.default.jwtGenerate(user, expDate, date, secretKey);
+        let result = await _tokenService.default.addSecretKeyToTable(token, secretKey);
+        (0, _chai.expect)(result).to.equal('OK');
+      });
+    });
+    describe('Retrieve Secret Key from Redis Server', function () {
+      it('Should return back the token, which means its verified', async function () {
+        let retrievedKey = await _tokenService.default.findSecretKey(token);
+
+        let verify = _jwtauth.default.jwtVerify(token, retrievedKey);
+
+        (0, _chai.expect)(verify.name).to.equal('Cinefiled');
+      });
+    });
+    after(async function () {
+      await _tokenService.default.removeSecretKey(token);
     });
   });
   after(function (done) {

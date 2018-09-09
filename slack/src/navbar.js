@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './navbar.css';
 
 function Navbar ({tabStatus, changeTab, tabOptions}){
@@ -28,6 +29,12 @@ function Navbar ({tabStatus, changeTab, tabOptions}){
             </div>
         </div>
     );
+}
+
+Navbar.propTypes = {
+    tabStatus: PropTypes.string.isRequired,
+    changeTab: PropTypes.func.isRequired,
+    tabOptions: PropTypes.array.isRequired,
 }
 
 export default Navbar;

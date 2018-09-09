@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import './index.css';
 import Navbar from './navbar.js';
 import MessageList from './messagelist.js';
@@ -8,13 +9,20 @@ import userData from './data/userdata.json';
 import tabOptions from './data/tab-options.json';
 import * as Scroll from 'react-scroll';
 
+
 let scroll = Scroll.animateScroll;
 
-class SlackMessage extends React.Component {
+// TODO:
+// Put the JWT into the Local Storage.
 
-    componentDidMount(){
+// TODO:
+// Restrict creating channel names to avoid
+// duplicates or ones similar to their friends.
+
+class SlackMessage extends React.Component {
+    componentDidMount() {
         let that = this;
-        setTimeout( function(){
+        setTimeout(function(){
         let messages = that.state.messages.slice();
 
         messages.push(channelData[0]);
@@ -72,20 +80,19 @@ class SlackMessage extends React.Component {
                 messages:messages,
                 userinput: '',
             });
-             this.scrollBottom();
+            this.scrollBottom();
         }
     }
 
     changeTab(event){
         let tab = event.target.textContent;
         this.setState({
-             tab: tab,
+            tab: tab,
         });
         this.scrollBottom();
     }
 
     render(){
-        console.log(this.state.messages);
         return(
             <React.Fragment>
                 <Navbar 

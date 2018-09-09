@@ -33,7 +33,7 @@ function jwtGenerate(user, expireDate, issuedAt, secretKey) {
     exp: expireDate
   };
 
-  let token = _jsonwebtoken.default.sign(jPayload, 'password');
+  let token = _jsonwebtoken.default.sign(jPayload, secretKey);
 
   return token;
 } // Verifies the JSON Web Token with the secret key.
@@ -48,11 +48,9 @@ function jwtGenerate(user, expireDate, issuedAt, secretKey) {
 
 function jwtVerify(token, secretKey) {
   try {
-    _jsonwebtoken.default.verify(token, secretKey);
-
-    return true;
+    return _jsonwebtoken.default.verify(token, secretKey);
   } catch (e) {
-    return false;
+    return e;
   }
 }
 

@@ -2,11 +2,17 @@ import bunyan from 'bunyan';
 import RotatingFileSystem from 'bunyan-rotating-file-stream';
 import redis from 'redis';
 import credentials from '../../secretUsernamePassword.js';
+import bluebird from 'bluebird';
 
 // Below sets up the logging system for the app using bunyan.
 // Any logs that are info or error are logged first to the stdout
 // then logged into each of their own files respectively.
 // After a day or a file size. The files are rolled over for the next messages.
+
+
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
+
 let options = {
     name: 'slack_app',
     streams: [{

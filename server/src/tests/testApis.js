@@ -1,14 +1,12 @@
 import channelServices from '../services/channelsServices.js';
 import userServices from '../services/userServices.js';
 import messageServices from '../services/messagesServices.js';
+import tokenService from '../services/tokenService.js';
 import credentials from '../../../secretUsernamePassword.js';
 import mongoose from 'mongoose';
-// import mocha from 'mocha';
-// import deepEqual from 'deep-equal';
+import jwtAuth from '../user-auth/jwtauth.js';
+import uuid from 'uuid';
 import {expect} from 'chai';
-// import {log} from '../config.js';
-// import { doesNotReject } from 'assert';
-// import { isBuffer } from 'util';
 
 /**
 Go Back Through the services and see
@@ -275,7 +273,7 @@ describe('Database Tests', function() {
                 ).then((res) => done());
         });
     });
-    describe('Test#5: MessageService: ', function() {
+    describe('Test#5: MessageService', function() {
         let userId;
         let friendId;
         let channelId;
@@ -340,6 +338,36 @@ describe('Database Tests', function() {
                     channelServices.removeChannel(userId, channelId, true);
                     done();
                 });
+        });
+    });
+    describe('Test#6: JWT Tokens', function() {
+        let user = {
+            username: 'Cinefiled',
+            email: 'cinefiled@yahoo.com',
+        };
+        let date = Date.now();
+        let expDate = date + (1000 * 600);
+        let token;
+        describe('Create Token and Add to Redis Server', function() {
+            it('Should return OK if successfully added',
+                async function() {
+                    let secretKey = uuid.v4();
+                    token = jwtAuth.jwtGenerate(user, expDate, date, secretKey);
+                    let result = await tokenService.addSecretKeyToTable(
+                    token, secretKey);
+                    expect(result).to.equal('OK');
+            });
+        });
+        describe('Retrieve Secret Key from Redis Server', function() {
+            it('Should return back the token, which means its verified',
+                async function() {
+                    let retrievedKey = await tokenService.findSecretKey(token);
+                    let verify = jwtAuth.jwtVerify(token, retrievedKey);
+                    expect(verify.name).to.equal('Cinefiled');
+            });
+        });
+        after(async function() {
+            await tokenService.removeSecretKey(token);
         });
     });
     after(function(done) {
