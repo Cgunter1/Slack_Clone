@@ -5,13 +5,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+var _deepEqual = _interopRequireDefault(require("deep-equal"));
+
+var _bcrypt = _interopRequireDefault(require("bcrypt"));
+
 var _UserModel = _interopRequireDefault(require("../models/UserModel.js"));
 
 var _channelsServices = _interopRequireDefault(require("./channelsServices.js"));
 
 var _config = _interopRequireDefault(require("../config.js"));
-
-var _deepEqual = _interopRequireDefault(require("deep-equal"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -220,6 +222,31 @@ async function removeFriend(userId, channelName, channelId) {
   }
 }
 /**
+ * Verifies that both the username and password given match.
+ * @param {string} username Name of the user that is submittin.
+ * @param {number} possiblePassword Password of the user that is submitting.
+ * @return {boolean} Determination of the identity of the user.
+ */
+
+
+async function verifyUserIdentity(username, possiblePassword) {
+  try {
+    let user = await findUser('name', username);
+    console.log(possiblePassword);
+    console.log(user.password);
+    let result = await _bcrypt.default.compare(possiblePassword, user.password);
+
+    if (result) {
+      return user;
+    }
+
+    throw new Error('Bad Login');
+  } catch (e) {
+    console.error(e);
+    return e;
+  }
+}
+/**
  * Get all channels and friends from user_id.
  * @param {number} userId Id of the user that is requesting
  * all the channels of theirs.
@@ -266,6 +293,7 @@ var _default = {
   createUser,
   findUser,
   deleteUser,
-  removeChannel
+  removeChannel,
+  verifyUserIdentity
 };
 exports.default = _default;

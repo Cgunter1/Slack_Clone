@@ -1,9 +1,18 @@
 // This will be the api that will serve the messages from the MongoDB database.
 import express from 'express';
-// import jwtAuth from '../user-auth/jwtauth.js';
-// import bodyParser from 'body-parser';
+import isEmail from 'validator/lib/isEmail';
+import trim from 'validator/lib/trim';
+import emailNormalizer from 'validator/lib/normalizeEmail';
+import uuid from 'uuid';
+import userServices from '../services/userServices.js';
+import tokenService from '../services/tokenService.js';
+import log from '../config.js';
+import jwtAuth from '../user-auth/jwtauth.js';
 
+/* eslint-disable */
 const router = express.Router();
+/* eslint-enable */
+const logger = log.log;
 
 // WARNING. V
 // If either updatePassword route return danger: true,
@@ -28,10 +37,37 @@ router.post('/updatePassword_Questions_PhoneNumber', (req, res) => {});
 // either through SMS or email using Twilio.
 router.post('/updatePassword_token', (req, res) => {});
 
+
+// TODO:
+// At Some point, add phoneNumber and Security Questions.
 // This route creates the user.
 // Accepts username, email, and password.
 // Eventually, phoneNumber and security questions.
-router.post('/newUser', (req, res) => {
+router.post('/createUser', async (req, res) => {
+    let email = req.body.email;
+    let username = req.body.username.toString();
+    let password = req.body.password.toString();
+    if (isEmail(email)) {
+        username = trim(username);
+        password = trim(password);
+        email = trim(email);
+        email = emailNormalizer(email);
+        let date = Date.now();
+        let expDate = date + (1000 * 600);
+        try {
+            let user = await userServices.createUser(email, username, password);
+            let secretKey = uuid.v4();
+            let token = jwtAuth.jwtGenerate(user, expDate, date, secretKey);
+            await tokenService.addSecretKeyToTable(
+                token, secretKey);
+            return res.json({status: true, id: user.id, token: token});
+        } catch (e) {
+            logger.error(e);
+            res.status(404).json({status: false});
+        }
+    } else {
+        res.status(404).json({status: false});
+    }
     // Body will include the username, email, and password for now.
     // A new user will then be created from that information and logged
     // to log.info.
@@ -41,11 +77,22 @@ router.post('/newUser', (req, res) => {
 
 // The login will go and verify the username and password.
 // If correct, it will return a jwt.
-router.post('/login', (req, res) => {
-    // Check login.
-    // let user;
-    // If true?,
-
+router.post('/login', async (req, res) => {
+    let date = Date.now();
+    let expDate = date + (1000 * 600);
+    try {
+        let username = req.body.username.toString();
+        let password = req.body.password.toString();
+        let user = await userServices.verifyUserIdentity(username, password);
+        let secretKey = uuid.v4();
+        let token = jwtAuth.jwtGenerate(user, expDate, date, secretKey);
+        await tokenService.addSecretKeyToTable(
+            token, secretKey);
+        return res.json({status: true, id: user.id, token: token});
+    } catch (e) {
+        logger.error(e);
+        res.status(404).json({status: false});
+    }
 });
 
 export default router;

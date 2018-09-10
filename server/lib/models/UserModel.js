@@ -9,6 +9,10 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 
 var _bcrypt = _interopRequireDefault(require("bcrypt"));
 
+var _userServices = _interopRequireDefault(require("../services/userServices"));
+
+var _fs = require("fs");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // This is the salt that will be used with the bcrypt function
@@ -60,16 +64,26 @@ userSchema.pre('save', function (next) {
   });
 }); // Adds the comparePasswords method to the schema, so it is accessible
 // to compare the passwords without headache.
-
-userSchema.methods.comparePasswords = function (possiblePassword, cb) {
-  _bcrypt.default.compare(possiblePassword, this.password, function (err, res) {
-    if (err) {
-      console.error(err);
-    } else {
-      cb(res);
-    }
-  });
-};
+// userSchema.methods.comparePasswords = async function(username, possiblePassword) {
+//     try {
+//     let user = await userServices.findUser('name', username);
+//     console.log(possiblePassword);
+//     console.log(user.password);
+//     return await bcrypt.compare(possiblePassword, user.password,
+//         async function(e, res) {
+//         console.log(res);
+//         if (e) {
+//             console.error(e);
+//             return new Error(e);
+//         } else {
+//             return res;
+//         }
+//     });
+//     } catch (e) {
+//         console.error(e);
+//         return new Error(e);
+//     }
+// };
 
 var _default = _mongoose.default.model('User', userSchema);
 

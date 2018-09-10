@@ -1,8 +1,10 @@
 /* eslint-disable */
+import deepEqual from 'deep-equal';
+import bcrypt from 'bcrypt';
 import userSchema from '../models/UserModel.js';
 import channelService from './channelsServices.js';
 import logger from '../config.js';
-import deepEqual from 'deep-equal';
+
 /* eslint-enable */
 
 let log = logger.log;
@@ -181,6 +183,26 @@ async function removeFriend(userId, channelName, channelId) {
 }
 
 /**
+ * Verifies that both the username and password given match.
+ * @param {string} username Name of the user that is submittin.
+ * @param {number} possiblePassword Password of the user that is submitting.
+ * @return {boolean} Determination of the identity of the user.
+ */
+async function verifyUserIdentity(username, possiblePassword) {
+  try {
+    let user = await findUser('name', username);
+    let result = await bcrypt.compare(possiblePassword, user.password);
+    if (result) {
+      return user;
+    }
+      throw new Error('Bad Login');
+    } catch (e) {
+        console.error(e);
+        return e;
+    }
+}
+
+/**
  * Get all channels and friends from user_id.
  * @param {number} userId Id of the user that is requesting
  * all the channels of theirs.
@@ -222,4 +244,5 @@ export default {
   findUser,
   deleteUser,
   removeChannel,
+  verifyUserIdentity,
 };

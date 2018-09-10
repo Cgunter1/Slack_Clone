@@ -4,7 +4,7 @@
   "description": "This is the api for the slack app that will deal with the interaction with the database.",
   "main": "server.js",
   "scripts": {
-    "start": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && nodemon ./server/lib/api/server.js | bunyan",
+    "start": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && nodemon ./server/lib/server.js | bunyan",
     "test": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && mocha -c ./server/lib/tests/testApis.js | bunyan"
   },
   "repository": {
@@ -35,7 +35,8 @@
     "mongoose": "^5.2.10",
     "redis": "^2.8.0",
     "sha256": "^0.2.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "validator": "^10.7.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-rc.4",

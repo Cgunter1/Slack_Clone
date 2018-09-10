@@ -10,7 +10,7 @@ let client = config.redisClient;
  */
 async function addSecretKeyToTable(secretKey, JWT) {
     return new Promise(function(resolve, reject) {
-      client.set(secretKey, JWT, (err, res) => {
+      client.set(secretKey, JWT, 'EX', 6000, (err, res) => {
         if (err) return reject(err);
         return resolve(res);
       });
