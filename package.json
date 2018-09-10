@@ -4,7 +4,7 @@
   "description": "This is the api for the slack app that will deal with the interaction with the database.",
   "main": "server.js",
   "scripts": {
-    "start": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && nodemon ./server/lib/server.js | bunyan",
+    "start": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && nodemon ./server/lib/bin/www.js | bunyan",
     "test": "./node_modules/.bin/babel ./server/src --out-dir ./server/lib && mocha -c ./server/lib/tests/testApis.js | bunyan"
   },
   "repository": {
@@ -30,6 +30,7 @@
     "bunyan-rotating-file-stream": "^1.6.3",
     "deep-equal": "^1.0.1",
     "express": "^4.16.3",
+    "http": "0.0.0",
     "jsonwebtoken": "^8.3.0",
     "jsrsasign": "^8.0.12",
     "mongoose": "^5.2.10",
@@ -46,6 +47,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.1.2",
+    "chai-http": "^4.2.0",
     "eslint": "^5.4.0",
     "eslint-config-google": "^0.9.1",
     "mocha": "^5.2.0"

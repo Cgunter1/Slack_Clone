@@ -2,6 +2,16 @@
 
 require("core-js/modules/web.dom.iterable");
 
+var _uuid = _interopRequireDefault(require("uuid"));
+
+var _chai = _interopRequireWildcard(require("chai"));
+
+var _chaiHttp = _interopRequireDefault(require("chai-http"));
+
+var _mongoose = _interopRequireDefault(require("mongoose"));
+
+var _http = _interopRequireDefault(require("http"));
+
 var _channelsServices = _interopRequireDefault(require("../services/channelsServices.js"));
 
 var _userServices = _interopRequireDefault(require("../services/userServices.js"));
@@ -12,13 +22,11 @@ var _tokenService = _interopRequireDefault(require("../services/tokenService.js"
 
 var _secretUsernamePassword = _interopRequireDefault(require("../../../secretUsernamePassword.js"));
 
-var _mongoose = _interopRequireDefault(require("mongoose"));
-
 var _jwtauth = _interopRequireDefault(require("../user-auth/jwtauth.js"));
 
-var _uuid = _interopRequireDefault(require("uuid"));
+var _server = _interopRequireDefault(require("../server.js"));
 
-var _chai = require("chai");
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33,6 +41,8 @@ Promise.all().
 const url = `mongodb://${_secretUsernamePassword.default.mongoUsername}:${_secretUsernamePassword.default.mongoPassword}@ds239692.mlab.com:39692/slack_clone`; // This establishes the logging I will be using over this project,
 // which is bunyan.
 // const logger = log;
+
+_chai.default.use(_chaiHttp.default);
 
 describe('Database Tests', function () {
   before(function (done) {
@@ -282,11 +292,49 @@ describe('Database Tests', function () {
         (0, _chai.expect)(verify.name).to.equal('Cinefiled');
       });
     });
-    after(async function () {
+    after(async function (done) {
       await _tokenService.default.removeSecretKey(token);
+
+      _mongoose.default.connection.close(() => done());
     });
-  });
-  after(function (done) {
-    _mongoose.default.connection.close(done());
+  }); // FIXME:
+  // Try to use SuperTest instead of http-test;
+
+  describe('Test#7: Http Server Routes', async function () {
+    const url = `mongodb://${_secretUsernamePassword.default.mongoUsername}:${_secretUsernamePassword.default.mongoPassword}@ds239692.mlab.com:39692/slack_clone`;
+
+    _server.default.set('PORT', process.env.port || 5000);
+
+    let port = _server.default.get('PORT');
+
+    let host = `http://localhost:${port}`;
+
+    const server = _http.default.createServer(_server.default);
+
+    await server.listen(port);
+    before(function (done) {
+      _mongoose.default.connect(url, {
+        useNewUrlParser: true
+      }, () => done());
+    });
+    describe('Test#1: Testing User Creation/Login', function () {
+      it('Should return a token and a 200 status', async function (done) {
+        this.timeout(10000);
+
+        _chai.default.request(host).post('/user/createUser').type('json').send({
+          'username': 'Cinefiled',
+          'password': '123password1',
+          'email': 'email@gmail.com'
+        }).then(res => {
+          (0, _chai.expect)(res).to.have.status(200);
+          done();
+        }).catch(err => {
+          throw err;
+        });
+      });
+    });
+    after(function (done) {
+      _mongoose.default.connection.close(() => done());
+    });
   });
 });

@@ -28,7 +28,11 @@ var _jwtauth = _interopRequireDefault(require("../user-auth/jwtauth.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // This will be the api that will serve the messages from the MongoDB database.
+
+/* eslint-disable */
 const router = _express.default.Router();
+/* eslint-enable */
+
 
 const logger = _config.default.log; // WARNING. V
 // If either updatePassword route return danger: true,
@@ -49,7 +53,9 @@ router.post('/updatePassword_Questions_PhoneNumber', (req, res) => {}); // After
 // will expire after a day. The token will be sent
 // either through SMS or email using Twilio.
 
-router.post('/updatePassword_token', (req, res) => {}); // This route creates the user.
+router.post('/updatePassword_token', (req, res) => {}); // TODO:
+// At Some point, add phoneNumber and Security Questions.
+// This route creates the user.
 // Accepts username, email, and password.
 // Eventually, phoneNumber and security questions.
 
@@ -68,17 +74,25 @@ router.post('/createUser', async (req, res) => {
 
     try {
       let user = await _userServices.default.createUser(email, username, password);
+      console.log("token");
 
-      let secretKey = _uuid.default.v4();
+      if (user === null) {
+        // Means the User already exists.
+        return res.status(403).json({
+          status: false
+        });
+      } else {
+        let secretKey = _uuid.default.v4();
 
-      let token = _jwtauth.default.jwtGenerate(user, expDate, date, secretKey);
+        let token = _jwtauth.default.jwtGenerate(user, expDate, date, secretKey);
 
-      await _tokenService.default.addSecretKeyToTable(token, secretKey);
-      return res.json({
-        status: true,
-        id: user.id,
-        token: token
-      });
+        await _tokenService.default.addSecretKeyToTable(token, secretKey);
+        res.status(200).json({
+          status: true,
+          id: user.id,
+          token: token
+        });
+      }
     } catch (e) {
       logger.error(e);
       res.status(404).json({
@@ -112,7 +126,7 @@ router.post('/login', async (req, res) => {
     let token = _jwtauth.default.jwtGenerate(user, expDate, date, secretKey);
 
     await _tokenService.default.addSecretKeyToTable(token, secretKey);
-    return res.json({
+    return res.status(200).json({
       status: true,
       id: user.id,
       token: token

@@ -56,11 +56,17 @@ router.post('/createUser', async (req, res) => {
         let expDate = date + (1000 * 600);
         try {
             let user = await userServices.createUser(email, username, password);
+            console.log("token");
+            if (user === null) {
+                // Means the User already exists.
+                return res.status(403).json({status: false});
+            } else {
             let secretKey = uuid.v4();
             let token = jwtAuth.jwtGenerate(user, expDate, date, secretKey);
             await tokenService.addSecretKeyToTable(
                 token, secretKey);
-            return res.json({status: true, id: user.id, token: token});
+            res.status(200).json({status: true, id: user.id, token: token});
+            }
         } catch (e) {
             logger.error(e);
             res.status(404).json({status: false});
@@ -88,7 +94,7 @@ router.post('/login', async (req, res) => {
         let token = jwtAuth.jwtGenerate(user, expDate, date, secretKey);
         await tokenService.addSecretKeyToTable(
             token, secretKey);
-        return res.json({status: true, id: user.id, token: token});
+        return res.status(200).json({status: true, id: user.id, token: token});
     } catch (e) {
         logger.error(e);
         res.status(404).json({status: false});

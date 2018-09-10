@@ -109,21 +109,33 @@ async function deleteUser(personInfo) {
  * @param {string} userName The name of the user.
  * @param {string} userPassword The password of the user to add.
  * @return {object} Returns user schema if successful or error object
- * if not successful.
+ * if not successful. Or returns null if the username already exists.
  */
 
 
 async function createUser(userEmail, userName, userPassword) {
   try {
-    /* eslint-disable */
-    let user = new _UserModel.default({
-      /* eslint-enable */
-      username: userName,
-      password: userPassword,
-      email: userEmail
-    });
-    return await user.save();
+    console.log("dasdsa");
+    let possibleUser = await findUser('name', userName);
+    console.log("354543");
+
+    if (possibleUser !== null) {
+      console.log("da123");
+      return null;
+    } else {
+      /* eslint-disable */
+      let user = new _UserModel.default({
+        /* eslint-enable */
+        username: userName,
+        password: userPassword,
+        email: userEmail
+      });
+      console.log("dsadas");
+      return await user.save();
+    }
   } catch (e) {
+    console.log("321213");
+    console.log('possibleUser.username');
     log.error(e);
     return e;
   }
@@ -232,8 +244,6 @@ async function removeFriend(userId, channelName, channelId) {
 async function verifyUserIdentity(username, possiblePassword) {
   try {
     let user = await findUser('name', username);
-    console.log(possiblePassword);
-    console.log(user.password);
     let result = await _bcrypt.default.compare(possiblePassword, user.password);
 
     if (result) {

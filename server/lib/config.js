@@ -68,6 +68,9 @@ let redisClient = _redis.default.createClient({
   password: _secretUsernamePassword.default.redisPassword
 });
 
+redisClient.on('ready', () => {
+  console.log('Redis Client on.');
+});
 let jwt = {
   hashAlg: 'HS256'
 };

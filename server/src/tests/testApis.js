@@ -1,12 +1,17 @@
+
+import uuid from 'uuid';
+import {expect} from 'chai';
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import mongoose from 'mongoose';
+import http from 'http';
 import channelServices from '../services/channelsServices.js';
 import userServices from '../services/userServices.js';
 import messageServices from '../services/messagesServices.js';
 import tokenService from '../services/tokenService.js';
 import credentials from '../../../secretUsernamePassword.js';
-import mongoose from 'mongoose';
 import jwtAuth from '../user-auth/jwtauth.js';
-import uuid from 'uuid';
-import {expect} from 'chai';
+import app from '../server.js';
 
 /**
 Go Back Through the services and see
@@ -21,6 +26,8 @@ const url = `mongodb://${credentials.mongoUsername}:${credentials.mongoPassword}
 // This establishes the logging I will be using over this project,
 // which is bunyan.
 // const logger = log;
+
+chai.use(chaiHttp);
 
 describe('Database Tests', function() {
     before(function(done) {
@@ -366,11 +373,45 @@ describe('Database Tests', function() {
                     expect(verify.name).to.equal('Cinefiled');
             });
         });
-        after(async function() {
+        after(async function(done) {
             await tokenService.removeSecretKey(token);
+            mongoose.connection.close(() => done());
         });
     });
-    after(function(done) {
-        mongoose.connection.close(done());
-    });
+    // FIXME:
+    // Try to use SuperTest instead of http-test;
+    // describe('Test#7: Http Server Routes', async function() {
+    //     const url = `mongodb://${credentials.mongoUsername}:${credentials.mongoPassword}@ds239692.mlab.com:39692/slack_clone`;
+    //     app.set('PORT', process.env.port || 5000);
+    //     let port = app.get('PORT');
+    //     let host = `http://localhost:${port}`;
+    //     const server = http.createServer(app);
+    //     await server.listen(port);
+    //     before(function(done) {
+    //         mongoose.connect(url, {useNewUrlParser: true}, () => done());
+    //     });
+    //     describe('Test#1: Testing User Creation/Login', function() {
+    //         it('Should return a token and a 200 status', async function(done) {
+    //             this.timeout(10000);
+    //             chai
+    //                 .request(host)
+    //                 .post('/user/createUser')
+    //                 .type('json')
+    //                 .send({
+    //                     'username': 'Cinefiled',
+    //                     'password': '123password1',
+    //                     'email': 'email@gmail.com',
+    //                 })
+    //                 .then((res) => {
+    //                     expect(res).to.have.status(200);
+    //                     done();
+    //                 }).catch((err) => {
+    //                     throw err;
+    //                 });
+    //         });
+    //     });
+    //     after(function(done) {
+    //         mongoose.connection.close(() => done());
+    //     });
+    // });
 });
