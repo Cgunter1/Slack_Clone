@@ -373,45 +373,74 @@ describe('Database Tests', function() {
                     expect(verify.name).to.equal('Cinefiled');
             });
         });
-        after(async function(done) {
+        after(async function() {
             await tokenService.removeSecretKey(token);
-            mongoose.connection.close(() => done());
         });
     });
-    // FIXME:
-    // Try to use SuperTest instead of http-test;
-    // describe('Test#7: Http Server Routes', async function() {
-    //     const url = `mongodb://${credentials.mongoUsername}:${credentials.mongoPassword}@ds239692.mlab.com:39692/slack_clone`;
-    //     app.set('PORT', process.env.port || 5000);
-    //     let port = app.get('PORT');
-    //     let host = `http://localhost:${port}`;
-    //     const server = http.createServer(app);
-    //     await server.listen(port);
-    //     before(function(done) {
-    //         mongoose.connect(url, {useNewUrlParser: true}, () => done());
-    //     });
-    //     describe('Test#1: Testing User Creation/Login', function() {
-    //         it('Should return a token and a 200 status', async function(done) {
-    //             this.timeout(10000);
-    //             chai
-    //                 .request(host)
-    //                 .post('/user/createUser')
-    //                 .type('json')
-    //                 .send({
-    //                     'username': 'Cinefiled',
-    //                     'password': '123password1',
-    //                     'email': 'email@gmail.com',
-    //                 })
-    //                 .then((res) => {
-    //                     expect(res).to.have.status(200);
-    //                     done();
-    //                 }).catch((err) => {
-    //                     throw err;
-    //                 });
-    //         });
-    //     });
-    //     after(function(done) {
-    //         mongoose.connection.close(() => done());
-    //     });
-    // });
+    describe('Test#7: Http Server Routes', function() {
+        app.set('PORT', process.env.port || 5000);
+        let port = app.get('PORT');
+        let host = `http://localhost:${port}`;
+        const server = http.createServer(app);
+        server.listen(port);
+        describe('Test#1: Testing User Creation', function() {
+            it('Should return a token and a 200 status', function(done) {
+                chai
+                    .request(host)
+                    .post('/user/createUser')
+                    .type('json')
+                    .send({
+                        'username': 'Cinefiled',
+                        'password': '123password1',
+                        'email': 'email@gmail.com',
+                    })
+                    .end((err, res) => {
+                        if (err) throw err;
+                        expect(res).to.have.status(200);
+                        done();
+                    });
+            });
+            it('Should return false with a 403 status, because user exists',
+                function(done) {
+                chai
+                    .request(host)
+                    .post('/user/createUser')
+                    .type('json')
+                    .send({
+                        'username': 'Cinefiled',
+                        'password': '123password1',
+                        'email': 'email@gmail.com',
+                    })
+                    .end((err, res) => {
+                        if (err) throw err;
+                        expect(res).to.have.status(403);
+                        done();
+                    });
+            });
+        });describe('Test#2: Testing User Login', function() {
+            it('Should return a token and a 200 status', function(done) {
+                chai
+                    .request(host)
+                    .post('/user/login')
+                    .type('json')
+                    .send({
+                        'username': 'Cinefiled',
+                        'password': '123password1',
+                    })
+                    .end((err, res) => {
+                        if (err) throw err;
+                        expect(res).to.have.status(200);
+                        done();
+                    });
+            });
+        });
+        after(function(done) {
+            Promise.all([
+                userServices.deleteUser({username: 'Cinefiled'}),
+            ]).then(() => done());
+        });
+    });
+    after(function(done) {
+        mongoose.connection.close(() => done());
+    });
 });

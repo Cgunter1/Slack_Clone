@@ -74,7 +74,6 @@ router.post('/createUser', async (req, res) => {
 
     try {
       let user = await _userServices.default.createUser(email, username, password);
-      console.log("token");
 
       if (user === null) {
         // Means the User already exists.

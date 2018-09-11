@@ -89,11 +89,8 @@ async function deleteUser(personInfo) {
  */
 async function createUser(userEmail, userName, userPassword) {
   try {
-    console.log("dasdsa");
     let possibleUser = await findUser('name', userName);
-    console.log("354543");
     if (possibleUser !== null) {
-      console.log("da123");
       return null;
     } else {
       /* eslint-disable */
@@ -102,12 +99,9 @@ async function createUser(userEmail, userName, userPassword) {
         username: userName,
         password: userPassword,
         email: userEmail});
-      console.log("dsadas");
       return await user.save();
     }
   } catch (e) {
-    console.log("321213");
-    console.log('possibleUser.username');
     log.error(e);
     return e;
   }

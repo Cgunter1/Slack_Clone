@@ -56,7 +56,6 @@ router.post('/createUser', async (req, res) => {
         let expDate = date + (1000 * 600);
         try {
             let user = await userServices.createUser(email, username, password);
-            console.log("token");
             if (user === null) {
                 // Means the User already exists.
                 return res.status(403).json({status: false});
