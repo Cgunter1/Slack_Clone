@@ -26,6 +26,8 @@ var _jwtauth = _interopRequireDefault(require("../user-auth/jwtauth.js"));
 
 var _server = _interopRequireDefault(require("../server.js"));
 
+var _config = _interopRequireDefault(require("../config.js"));
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -38,7 +40,8 @@ Promise.all().
 // This file is for testing out the services.
 // This is the link to the Slack Clone's Mongo Database. The username
 // and password are on a different file, so no peeking...
-const url = `mongodb://${_secretUsernamePassword.default.mongoUsername}:${_secretUsernamePassword.default.mongoPassword}@ds239692.mlab.com:39692/slack_clone`; // This establishes the logging I will be using over this project,
+const url = `mongodb://${_secretUsernamePassword.default.mongoUsername}:${_secretUsernamePassword.default.mongoPassword}@ds239692.mlab.com:39692/slack_clone`;
+let client = _config.default.redisClient; // This establishes the logging I will be using over this project,
 // which is bunyan.
 // const logger = log;
 
@@ -183,7 +186,7 @@ describe('Database Tests', function () {
         await _userServices.default.addFriend('Cinefiled', userId, 'Cgunter');
         let user = await _userServices.default.findUser('id', userId);
         let friend = await _userServices.default.findUser('id', friendId);
-        console.log(friend);
+        console.log(user.friends[0]);
         let channel = await _channelsServices.default.getChannel(user.friends[0].id);
         (0, _chai.expect)(user.friends[0].name).to.equal('Cgunter');
         (0, _chai.expect)(user.friends[0].id).to.deep.equal(friend.friends[0].id);
@@ -202,7 +205,6 @@ describe('Database Tests', function () {
         await _userServices.default.removeFriend(userId, name, id);
         user = await _userServices.default.findUser('id', userId);
         let friend = await _userServices.default.findUser('id', friendId);
-        console.log(friend._id);
         let channel = await _channelsServices.default.getChannel(id);
         (0, _chai.expect)(user.friends.length).to.equal(0);
         (0, _chai.expect)(friend.friends.length).to.equal(0);
@@ -248,7 +250,6 @@ describe('Database Tests', function () {
       it('Should post a delete the message', async function () {
         await _messagesServices.default.removeMessage(messageId);
         let result = await _messagesServices.default.findMessages(channelId);
-        console.log(result);
         (0, _chai.expect)(result.length).to.equal(0);
       });
     });
@@ -306,7 +307,8 @@ describe('Database Tests', function () {
     const server = _http.default.createServer(_server.default);
 
     server.listen(port);
-    describe('Test#1: Testing User Creation', function () {
+    let token;
+    describe('Testing User Creation', function () {
       it('Should return a token and a 200 status', function (done) {
         _chai.default.request(host).post('/user/createUser').type('json').send({
           'username': 'Cinefiled',
@@ -330,11 +332,24 @@ describe('Database Tests', function () {
         });
       });
     });
-    describe('Test#2: Testing User Login', function () {
+    describe('Testing User Login', function () {
       it('Should return a token and a 200 status', function (done) {
         _chai.default.request(host).post('/user/login').type('json').send({
           'username': 'Cinefiled',
           'password': '123password1'
+        }).end((err, res) => {
+          if (err) throw err;
+          token = res.body.token;
+          console.log(token);
+          (0, _chai.expect)(res).to.have.status(200);
+          done();
+        });
+      });
+    });
+    describe('Testing User Logout', function () {
+      it('Should return a 200 status', function (done) {
+        _chai.default.request(host).post('/user/logout').type('json').set({
+          'authorization': `Bearer ${token}`
         }).end((err, res) => {
           if (err) throw err;
           (0, _chai.expect)(res).to.have.status(200);
@@ -349,6 +364,6 @@ describe('Database Tests', function () {
     });
   });
   after(function (done) {
-    _mongoose.default.connection.close(() => done());
+    _mongoose.default.connection.close(() => client.quit(done()));
   });
 });

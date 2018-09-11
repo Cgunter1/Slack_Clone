@@ -1,12 +1,40 @@
 // This will be the api that will serve the messages from the MongoDB database.
 import express from 'express';
+import tokenServices from '../services/tokenService';
+import jwtAuth from '../user-auth/jwtauth.js';
 // import bodyParser from 'body-parser';
 
 const router = express.Router();
 
+// TODO:
+// Add Channel.
+// Add Friend to channel.
+// 
 
-router.get('/:channelId/:count?', (req, res) => {
-    // Parameters: channelId, count(optional), and userId(from auth0 token).
+// Verifies Users before going to any of the channels.
+router.use(async function(req, res, next) {
+    if (!req.headers.authorization) {
+        res.status(403).send('Could not verify');
+    } else {
+        try {
+        let bearer = req.headers.authorization.split(' ');
+        let token = bearer[1];
+        let key = await tokenServices.findSecretKey(token);
+        let verify = jwtAuth.jwtVerify(token, key);
+        if (verify) {
+            res.locals.id = verify.id;
+            next();
+        } else {
+            res.status(403).send('Could not verify');
+        }
+        } catch (e) {
+            res.status(403).send('Could not verify');
+        }
+    }
+});
+
+router.get('/:channelId/:count?', async (req, res) => {
+    // Parameters: channelId, count(optional), and userId.
     // *In **React**, before sending a request,
     // React would check in its state that the user has access
     // to this particular channel.*
@@ -26,11 +54,14 @@ router.get('/:channelId/:count?', (req, res) => {
 
     // When the router recieves this request, it will return all
     // the messages associated with that channelId.
+    res.status(200).send(res.locals.id);
 });
 
 router.post('/:channelId', (req, res) => {
     // The information is checked with the userId to make sure that is correct through auth0.
     // The post body is given with the userId, message, timestamp.
+    // res.status(200).send(res.locals.username);
 });
+
 
 export default router;

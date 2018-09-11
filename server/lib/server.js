@@ -9,8 +9,6 @@ var _express = _interopRequireDefault(require("express"));
 
 var _bodyParser = _interopRequireDefault(require("body-parser"));
 
-var _validator = _interopRequireDefault(require("validator"));
-
 var _user_api = _interopRequireDefault(require("./api/user_api.js"));
 
 var _channel_api = _interopRequireDefault(require("./api/channel_api.js"));
@@ -19,7 +17,6 @@ var _config = _interopRequireDefault(require("./config.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import messageRouter from './api/message_api.js';
 const logger = _config.default.log; // TODO:
 // Remember after being finished with all the routes to
 // put the entire server under HTTPS!!!!!!
@@ -46,8 +43,5 @@ app.use('/channel', _channel_api.default); // If it is not in the message router
 app.all('*', (req, res) => {
   res.status(404).send('Sorry can\'t find that!');
 });
-var _default = app; // app.listen(app.get('PORT'), () => {
-//     console.log(`Running on Port ${app.get('PORT')}.`);
-// });
-
+var _default = app;
 exports.default = _default;

@@ -28,6 +28,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function jwtGenerate(user, expireDate, issuedAt, secretKey) {
   let jPayload = {
     name: user.username,
+    id: user.id,
     iat: issuedAt,
     jti: (0, _sha.default)(issuedAt + user.email),
     exp: expireDate

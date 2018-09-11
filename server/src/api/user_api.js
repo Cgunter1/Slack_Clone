@@ -14,6 +14,11 @@ const router = express.Router();
 /* eslint-enable */
 const logger = log.log;
 
+
+// TODO: 
+// Logout Function.
+// Add Friend.
+
 // WARNING. V
 // If either updatePassword route return danger: true,
 // the database will lock the user down. It will
@@ -97,6 +102,21 @@ router.post('/login', async (req, res) => {
     } catch (e) {
         logger.error(e);
         res.status(404).json({status: false});
+    }
+});
+
+router.post('/logout', async (req, res) => {
+    if (!req.headers.authorization) {
+        res.status(404).json({status: false});
+    } else {
+        let bearer = req.headers.authorization.split(' ');
+        let token = bearer[1];
+        try {
+            await tokenService.removeSecretKey(token);
+            res.status(200).json({status: true});
+        } catch (e) {
+            res.status(404).json({status: false});
+        }
     }
 });
 

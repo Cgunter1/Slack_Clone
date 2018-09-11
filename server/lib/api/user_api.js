@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+require("core-js/modules/es6.regexp.split");
+
 require("core-js/modules/es6.regexp.to-string");
 
 var _express = _interopRequireDefault(require("express"));
@@ -34,7 +36,10 @@ const router = _express.default.Router();
 /* eslint-enable */
 
 
-const logger = _config.default.log; // WARNING. V
+const logger = _config.default.log; // TODO: 
+// Logout Function.
+// Add Friend.
+// WARNING. V
 // If either updatePassword route return danger: true,
 // the database will lock the user down. It will
 // log the data as a loginFailure to detect abuse.
@@ -135,6 +140,27 @@ router.post('/login', async (req, res) => {
     res.status(404).json({
       status: false
     });
+  }
+});
+router.post('/logout', async (req, res) => {
+  if (!req.headers.authorization) {
+    res.status(404).json({
+      status: false
+    });
+  } else {
+    let bearer = req.headers.authorization.split(' ');
+    let token = bearer[1];
+
+    try {
+      await _tokenService.default.removeSecretKey(token);
+      res.status(200).json({
+        status: true
+      });
+    } catch (e) {
+      res.status(404).json({
+        status: false
+      });
+    }
   }
 });
 var _default = router;

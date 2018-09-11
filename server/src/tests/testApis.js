@@ -12,6 +12,7 @@ import tokenService from '../services/tokenService.js';
 import credentials from '../../../secretUsernamePassword.js';
 import jwtAuth from '../user-auth/jwtauth.js';
 import app from '../server.js';
+import config from '../config.js';
 
 /**
 Go Back Through the services and see
@@ -22,6 +23,8 @@ Promise.all().
 // This is the link to the Slack Clone's Mongo Database. The username
 // and password are on a different file, so no peeking...
 const url = `mongodb://${credentials.mongoUsername}:${credentials.mongoPassword}@ds239692.mlab.com:39692/slack_clone`;
+
+let client = config.redisClient;
 
 // This establishes the logging I will be using over this project,
 // which is bunyan.
@@ -238,7 +241,7 @@ describe('Database Tests', function() {
                 await userServices.addFriend('Cinefiled', userId, 'Cgunter');
                 let user = await userServices.findUser('id', userId);
                 let friend = await userServices.findUser('id', friendId);
-                console.log(friend);
+                console.log(user.friends[0]);
                 let channel = await channelServices.getChannel(
                   user.friends[0].id);
                 expect(user.friends[0].name).to.equal('Cgunter');
@@ -259,7 +262,6 @@ describe('Database Tests', function() {
                 await userServices.removeFriend(userId, name, id);
                 user = await userServices.findUser('id', userId);
                 let friend = await userServices.findUser('id', friendId);
-                console.log(friend._id);
                 let channel = await channelServices.getChannel(id);
                 expect(user.friends.length).to.equal(0);
                 expect(friend.friends.length).to.equal(0);
@@ -326,7 +328,6 @@ describe('Database Tests', function() {
               async function() {
                 await messageServices.removeMessage(messageId);
                 let result = await messageServices.findMessages(channelId);
-                console.log(result);
                 expect(result.length).to.equal(0);
             });
         });
@@ -383,7 +384,8 @@ describe('Database Tests', function() {
         let host = `http://localhost:${port}`;
         const server = http.createServer(app);
         server.listen(port);
-        describe('Test#1: Testing User Creation', function() {
+        let token;
+        describe('Testing User Creation', function() {
             it('Should return a token and a 200 status', function(done) {
                 chai
                     .request(host)
@@ -417,7 +419,8 @@ describe('Database Tests', function() {
                         done();
                     });
             });
-        });describe('Test#2: Testing User Login', function() {
+        });
+        describe('Testing User Login', function() {
             it('Should return a token and a 200 status', function(done) {
                 chai
                     .request(host)
@@ -426,6 +429,24 @@ describe('Database Tests', function() {
                     .send({
                         'username': 'Cinefiled',
                         'password': '123password1',
+                    })
+                    .end((err, res) => {
+                        if (err) throw err;
+                        token = res.body.token;
+                        console.log(token);
+                        expect(res).to.have.status(200);
+                        done();
+                    });
+            });
+        });
+        describe('Testing User Logout', function() {
+            it('Should return a 200 status', function(done) {
+                chai
+                    .request(host)
+                    .post('/user/logout')
+                    .type('json')
+                    .set({
+                        'authorization': `Bearer ${token}`,
                     })
                     .end((err, res) => {
                         if (err) throw err;
@@ -441,6 +462,6 @@ describe('Database Tests', function() {
         });
     });
     after(function(done) {
-        mongoose.connection.close(() => done());
+        mongoose.connection.close(() => client.quit(done()));
     });
 });

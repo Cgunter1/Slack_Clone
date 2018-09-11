@@ -5,15 +5,49 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+require("core-js/modules/es6.regexp.split");
+
 var _express = _interopRequireDefault(require("express"));
+
+var _tokenService = _interopRequireDefault(require("../services/tokenService"));
+
+var _jwtauth = _interopRequireDefault(require("../user-auth/jwtauth.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // This will be the api that will serve the messages from the MongoDB database.
 // import bodyParser from 'body-parser';
-const router = _express.default.Router();
+const router = _express.default.Router(); // TODO:
+// Add Channel.
+// Add Friend to channel.
+// 
+// Verifies Users before going to any of the channels.
 
-router.get('/:channelId/:count?', (req, res) => {// Parameters: channelId, count(optional), and userId(from auth0 token).
+
+router.use(async function (req, res, next) {
+  if (!req.headers.authorization) {
+    res.status(403).send('Could not verify');
+  } else {
+    try {
+      let bearer = req.headers.authorization.split(' ');
+      let token = bearer[1];
+      let key = await _tokenService.default.findSecretKey(token);
+
+      let verify = _jwtauth.default.jwtVerify(token, key);
+
+      if (verify) {
+        res.locals.id = verify.id;
+        next();
+      } else {
+        res.status(403).send('Could not verify');
+      }
+    } catch (e) {
+      res.status(403).send('Could not verify');
+    }
+  }
+});
+router.get('/:channelId/:count?', async (req, res) => {
+  // Parameters: channelId, count(optional), and userId.
   // *In **React**, before sending a request,
   // React would check in its state that the user has access
   // to this particular channel.*
@@ -30,9 +64,11 @@ router.get('/:channelId/:count?', (req, res) => {// Parameters: channelId, count
   // The 2nd Channel and 3rd Channel Ids would only be privy to the currentChannel.
   // When the router recieves this request, it will return all
   // the messages associated with that channelId.
+  res.status(200).send(res.locals.id);
 });
 router.post('/:channelId', (req, res) => {// The information is checked with the userId to make sure that is correct through auth0.
   // The post body is given with the userId, message, timestamp.
+  // res.status(200).send(res.locals.username);
 });
 var _default = router;
 exports.default = _default;

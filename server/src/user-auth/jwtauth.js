@@ -18,6 +18,7 @@ import sha256 from 'sha256';
 function jwtGenerate(user, expireDate, issuedAt, secretKey) {
   let jPayload = {
     name: user.username,
+    id: user.id,
     iat: issuedAt,
     jti: sha256(issuedAt + user.email),
     exp: expireDate,

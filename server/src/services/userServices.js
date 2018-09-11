@@ -146,9 +146,7 @@ async function addFriend(userName, userId, friendName) {
         ++channel.members;
         user.friends.push({name: friend.username, id: channel._id});
         friend.friends.push({name: user.username, id: channel._id});
-        await user.save();
-        await friend.save();
-        await channel.save();
+        await Promise.all([user.save(), friend.save(), channel.save()]);
     } catch (e) {
         log.error(e);
     }
@@ -166,7 +164,6 @@ async function removeFriend(userId, channelName, channelId) {
   try {
       let user = await findUser('id', userId);
       let friend = await findUser('name', channelName);
-      console.log(friend._id);
       await channelService.removeChannel(userId, channelId, true);
       let userFriends = [];
       let friendFriends = [];
@@ -178,10 +175,7 @@ async function removeFriend(userId, channelName, channelId) {
       }
       user.friends = userFriends;
       friend.friends = friendFriends;
-      let response = await friend.save();
-      let response2 = await user.save();
-      console.log(response);
-      console.log(response2);
+      await Promise.all([friend.save(), user.save()]);
   } catch (e) {
       log.error(e);
   }
