@@ -17,6 +17,8 @@ var _userServices = _interopRequireDefault(require("../services/userServices"));
 
 var _messagesServices = _interopRequireDefault(require("../services/messagesServices"));
 
+var _channelsServices = _interopRequireDefault(require("../services/channelsServices"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // This will be the api that will serve the messages from the MongoDB database.
@@ -41,6 +43,7 @@ router.use(async function (req, res, next) {
 
       if (verify) {
         res.locals.id = verify.id;
+        res.locals.username = verify.username;
         next();
       } else {
         res.status(403).send('Could not verify');
@@ -48,6 +51,38 @@ router.use(async function (req, res, next) {
     } catch (e) {
       res.status(403).send('Could not verify');
     }
+  }
+});
+router.get('/addChannel/:channelName', async (req, res) => {
+  try {
+    let channel = await _channelsServices.default.createChannel(res.locals.username, res.locals.id, req.params.channelName, false);
+    res.status(200).json({
+      status: true,
+      channel: channel
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(404).json({
+      status: false
+    });
+  }
+});
+router.delete('/removeChannel/:channelName', async (req, res) => {
+  if (!req.body.channelId) res.status(404).json({
+    status: false
+  });
+  let channelId = req.body.channelId;
+
+  try {
+    await _channelsServices.default.removeChannel(res.locals.id, channelId, false);
+    res.status(200).json({
+      status: true
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(404).json({
+      status: false
+    });
   }
 });
 router.get('/:channelName', async (req, res) => {

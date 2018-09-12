@@ -9,6 +9,8 @@ var _channelModel = _interopRequireDefault(require("../models/channelModel.js"))
 
 var _userServices = _interopRequireDefault(require("./userServices.js"));
 
+var _MessageModel = _interopRequireDefault(require("../models/MessageModel.js"));
+
 var _config = _interopRequireDefault(require("../config.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -98,6 +100,9 @@ async function removeChannel(userId, channelId, friendChannel) {
     if (channel !== null && channel.members === 0) {
       response = await _channelModel.default.deleteOne({
         _id: channelId
+      });
+      await _MessageModel.default.deleteMany({
+        channel_id: channelId
       });
     }
 

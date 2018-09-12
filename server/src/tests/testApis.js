@@ -22,7 +22,7 @@ Promise.all().
 // This file is for testing out the services.
 // This is the link to the Slack Clone's Mongo Database. The username
 // and password are on a different file, so no peeking...
-const url = `mongodb://${credentials.mongoUsername}:${credentials.mongoPassword}@ds239692.mlab.com:39692/slack_clone`;
+const URL = `mongodb://${credentials.mongoUsername}:${credentials.mongoPassword}@ds239692.mlab.com:39692/slack_clone`;
 
 let client = config.redisClient;
 
@@ -34,7 +34,7 @@ chai.use(chaiHttp);
 
 describe('Database Tests', function() {
     before(function(done) {
-        mongoose.connect(url, {useNewUrlParser: true});
+        mongoose.connect(URL, {useNewUrlParser: true});
         mongoose.connection.once('connected', function() {
             done();
         });
@@ -476,7 +476,7 @@ describe('Database Tests', function() {
                 });
             });
             describe('Post and retrieve a couple Messages by User', function() {
-                it('Should Return Messages in the Correct Order',
+                it('Should Return Messages',
                     function(done) {
                     chai
                         .request(host)
@@ -484,6 +484,43 @@ describe('Database Tests', function() {
                         .type('json')
                         .set({
                             'authorization': `Bearer ${permToken}`,
+                        })
+                        .end((err, res) => {
+                            if (err) throw err;
+                            expect(res).to.have.status(200);
+                            done();
+                        });
+                });
+            });
+            describe('Create Channel by User', function() {
+                it('Should Return Channel',
+                    function(done) {
+                    chai
+                        .request(host)
+                        .get('/channel/addChannel/newChannel')
+                        .type('json')
+                        .set({
+                            'authorization': `Bearer ${permToken}`,
+                        })
+                        .end((err, res) => {
+                            if (err) throw err;
+                            expect(res).to.have.status(200);
+                            done();
+                        });
+                });
+            });
+            describe('Delete Channel by User', function() {
+                it('Should Return Channel',
+                    function(done) {
+                    chai
+                        .request(host)
+                        .del('/channel/removeChannel/Channel')
+                        .type('json')
+                        .set({
+                            'authorization': `Bearer ${permToken}`,
+                        })
+                        .send({
+                            'channelId': channelId,
                         })
                         .end((err, res) => {
                             if (err) throw err;

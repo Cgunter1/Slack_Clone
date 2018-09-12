@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-import userServices from '../services/userServices';
-import { appendFileSync } from 'fs';
+// import userServices from '../services/userServices';
+// import { appendFileSync } from 'fs';
 
 // This is the salt that will be used with the bcrypt function
 // and password to create a hash.

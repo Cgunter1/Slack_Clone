@@ -44,11 +44,16 @@ async function removeChannel(userId, channelId, isFriendChannel) {
   let user = await findUser('id', userId);
   let channel = await channelService.getChannel(channelId);
   let newChannel = [];
-  let channelType = (isFriendChannel? user.friends: user.channels);
-  for (let channel of channelType) {
-    if (!deepEqual(channel.id, channelId)) {
-      newChannel.push(channel);
+  let channelType = (isFriendChannel ? user.friends : user.channels);
+  let channels = channelType.slice();
+  if (channels) {
+    for (let channel of channels) {
+      if (!deepEqual(channel.id, channelId)) {
+        newChannel.push(channel);
+      }
     }
+  } else {
+
   }
   if (isFriendChannel) {
     user.friends = newChannel;

@@ -1,6 +1,7 @@
 /* eslint-disable */
 import channelSchema from '../models/channelModel.js';
-import userSchema from './userServices.js';
+import userServices from './userServices.js';
+import messageSchema from '../models/MessageModel.js';
 import logger from '../config.js';
 /* eslint-enable */
 
@@ -27,7 +28,7 @@ async function createChannel(userName, userId, channelName, isFriendChannel) {
         let newChannel = await channel.save();
         // Update channel to the user collection.
         if (!isFriendChannel) {
-            await userSchema.addChannel(channel.name, channel._id, userId);
+            await userServices.addChannel(channel.name, channel._id, userId);
         }
         return newChannel;
     } catch (e) {
@@ -75,11 +76,14 @@ async function removeChannel(userId, channelId, friendChannel) {
                 _id: channelId,
             });
         }
-        await userSchema.removeChannel(userId, channelId, friendChannel);
+        await userServices.removeChannel(userId, channelId, friendChannel);
         let channel = await getChannel(channelId);
         if (channel !== null && channel.members === 0) {
             response = await channelSchema.deleteOne({
                 _id: channelId,
+            });
+            await messageSchema.deleteMany({
+                channel_id: channelId,
             });
         }
         return response;

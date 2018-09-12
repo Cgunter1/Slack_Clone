@@ -9,12 +9,10 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 
 var _bcrypt = _interopRequireDefault(require("bcrypt"));
 
-var _userServices = _interopRequireDefault(require("../services/userServices"));
-
-var _fs = require("fs");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// import userServices from '../services/userServices';
+// import { appendFileSync } from 'fs';
 // This is the salt that will be used with the bcrypt function
 // and password to create a hash.
 const SALT_FACTOR = 10;

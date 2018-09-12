@@ -4,6 +4,7 @@ import tokenServices from '../services/tokenService';
 import jwtAuth from '../user-auth/jwtauth.js';
 import userServices from '../services/userServices';
 import messagesServices from '../services/messagesServices';
+import channelsServices from '../services/channelsServices';
 // import bodyParser from 'body-parser';
 
 const router = express.Router();
@@ -25,6 +26,7 @@ router.use(async function(req, res, next) {
         let verify = jwtAuth.jwtVerify(token, key);
         if (verify) {
             res.locals.id = verify.id;
+            res.locals.username = verify.username;
             next();
         } else {
             res.status(403).send('Could not verify');
@@ -32,6 +34,36 @@ router.use(async function(req, res, next) {
         } catch (e) {
             res.status(403).send('Could not verify');
         }
+    }
+});
+
+router.get('/addChannel/:channelName', async (req, res) => {
+    try {
+        let channel = await channelsServices.createChannel(
+            res.locals.username,
+            res.locals.id,
+            req.params.channelName,
+            false);
+        res.status(200).json({status: true, channel: channel});
+    } catch (e) {
+        console.error(e);
+        res.status(404).json({status: false});
+    }
+});
+
+router.delete('/removeChannel/:channelName', async (req, res) => {
+    if (!req.body.channelId) res.status(404).json({status: false});
+    let channelId = req.body.channelId;
+    try {
+        await channelsServices.removeChannel(
+            res.locals.id,
+            channelId,
+            false,
+        );
+        res.status(200).json({status: true});
+    } catch (e) {
+        console.error(e);
+        res.status(404).json({status: false});
     }
 });
 
