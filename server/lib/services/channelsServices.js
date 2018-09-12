@@ -65,7 +65,9 @@ async function getChannel(channelId) {
     log.error(e);
     return e;
   }
-}
+} // TODO:
+// Remember to delete all the messages when a channel is deleted.
+
 /**
  * Deletes channel from channel objectId.
  * It recieves a channelId and a userId for the one deleting it.

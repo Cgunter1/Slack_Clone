@@ -186,7 +186,6 @@ describe('Database Tests', function () {
         await _userServices.default.addFriend('Cinefiled', userId, 'Cgunter');
         let user = await _userServices.default.findUser('id', userId);
         let friend = await _userServices.default.findUser('id', friendId);
-        console.log(user.friends[0]);
         let channel = await _channelsServices.default.getChannel(user.friends[0].id);
         (0, _chai.expect)(user.friends[0].name).to.equal('Cgunter');
         (0, _chai.expect)(user.friends[0].id).to.deep.equal(friend.friends[0].id);
@@ -307,53 +306,79 @@ describe('Database Tests', function () {
     const server = _http.default.createServer(_server.default);
 
     server.listen(port);
-    let token;
-    describe('Testing User Creation', function () {
-      it('Should return a token and a 200 status', function (done) {
-        _chai.default.request(host).post('/user/createUser').type('json').send({
-          'username': 'Cinefiled',
-          'password': '123password1',
-          'email': 'email@gmail.com'
-        }).end((err, res) => {
-          if (err) throw err;
-          (0, _chai.expect)(res).to.have.status(200);
-          done();
+    let permToken;
+    let tempToken;
+    let userId;
+    describe('User Api Interactions:', function () {
+      describe('Testing User Creation', function () {
+        it('Should return a token and a 200 status', function (done) {
+          _chai.default.request(host).post('/user/createUser').type('json').send({
+            'username': 'Cinefiled',
+            'password': '123password1',
+            'email': 'email@gmail.com'
+          }).end((err, res) => {
+            if (err) throw err;
+            userId = res.body.id;
+            permToken = res.body.token;
+            (0, _chai.expect)(res).to.have.status(200);
+            done();
+          });
+        });
+        it('Should return false with a 403 status, because user exists', function (done) {
+          _chai.default.request(host).post('/user/createUser').type('json').send({
+            'username': 'Cinefiled',
+            'password': '123password1',
+            'email': 'email@gmail.com'
+          }).end((err, res) => {
+            if (err) throw err;
+            (0, _chai.expect)(res).to.have.status(403);
+            done();
+          });
         });
       });
-      it('Should return false with a 403 status, because user exists', function (done) {
-        _chai.default.request(host).post('/user/createUser').type('json').send({
-          'username': 'Cinefiled',
-          'password': '123password1',
-          'email': 'email@gmail.com'
-        }).end((err, res) => {
-          if (err) throw err;
-          (0, _chai.expect)(res).to.have.status(403);
-          done();
+      describe('Testing User Login', function () {
+        it('Should return a token and a 200 status', function (done) {
+          _chai.default.request(host).post('/user/login').type('json').send({
+            'username': 'Cinefiled',
+            'password': '123password1'
+          }).end((err, res) => {
+            if (err) throw err;
+            tempToken = res.body.token;
+            (0, _chai.expect)(res).to.have.status(200);
+            done();
+          });
+        });
+      });
+      describe('Testing User Logout', function () {
+        it('Should return a 200 status', function (done) {
+          _chai.default.request(host).post('/user/logout').type('json').set({
+            'authorization': `Bearer ${tempToken}`
+          }).end((err, res) => {
+            if (err) throw err;
+            (0, _chai.expect)(res).to.have.status(200);
+            done();
+          });
         });
       });
     });
-    describe('Testing User Login', function () {
-      it('Should return a token and a 200 status', function (done) {
-        _chai.default.request(host).post('/user/login').type('json').send({
-          'username': 'Cinefiled',
-          'password': '123password1'
-        }).end((err, res) => {
-          if (err) throw err;
-          token = res.body.token;
-          console.log(token);
-          (0, _chai.expect)(res).to.have.status(200);
-          done();
+    describe('Channel Api Interactions:', function () {
+      let channelId;
+      before(function (done) {
+        Promise.all([_channelsServices.default.createChannel('Cinefiled', userId, 'Channel', false)]).then(res => {
+          channelId = res[0]._id;
+          Promise.all([_messagesServices.default.createMessage(channelId, 'Cinefiled', 'H'), _messagesServices.default.createMessage(channelId, 'Cinefiled', 'W')]).then(res => done());
         });
       });
-    });
-    describe('Testing User Logout', function () {
-      it('Should return a 200 status', function (done) {
-        _chai.default.request(host).post('/user/logout').type('json').set({
-          'authorization': `Bearer ${token}`
-        }).end((err, res) => {
-          if (err) throw err;
-          (0, _chai.expect)(res).to.have.status(200);
-          done();
+      describe('Post and retrieve a couple Messages by User', function () {
+        it('Should Return Messages in the Correct Order', function (done) {
+          _chai.default.request(host).get('/channel/Channel').type('json').set({
+            'authorization': `Bearer ${permToken}`
+          }).end((err, res) => {
+            if (err) throw err;
+            (0, _chai.expect)(res.body.messages[1].channel_id).to.deep.equal(channelId.id);
+            (0, _chai.expect)(res).to.have.status(200);
+            done();
+          });
         });
       });
     });

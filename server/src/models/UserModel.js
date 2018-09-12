@@ -47,27 +47,4 @@ userSchema.pre('save', function(next) {
     });
 });
 
-// Adds the comparePasswords method to the schema, so it is accessible
-// to compare the passwords without headache.
-// userSchema.methods.comparePasswords = async function(username, possiblePassword) {
-//     try {
-//     let user = await userServices.findUser('name', username);
-//     console.log(possiblePassword);
-//     console.log(user.password);
-//     return await bcrypt.compare(possiblePassword, user.password,
-//         async function(e, res) {
-//         console.log(res);
-//         if (e) {
-//             console.error(e);
-//             return new Error(e);
-//         } else {
-//             return res;
-//         }
-//     });
-//     } catch (e) {
-//         console.error(e);
-//         return new Error(e);
-//     }
-// };
-
 export default mongoose.model('User', userSchema);
