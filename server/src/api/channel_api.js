@@ -10,9 +10,10 @@ import channelsServices from '../services/channelsServices';
 const router = express.Router();
 
 // TODO:
-// Add Channel.
 // Add Friend to channel.
-// Remove Channel.
+// Add verification headers to check each of the types
+// for the api components like channelId for Mongo ObjectId.
+// Also add tests for addMessage and addFriend
 
 // Verifies Users before going to any of the channels.
 router.use(async function(req, res, next) {
@@ -108,11 +109,33 @@ router.get('/:channelName', async (req, res) => {
     // the messages associated with that channelId.
 });
 
-router.post('/:channelId', (req, res) => {
-    // The information is checked with the userId to make sure that is correct through auth0.
+router.post('/addMessage/:channelName', async (req, res) => {
+    // Body should include the channel ObjectId, Message, and username.
+    try {
+        let channelId = req.body.channelId;
+        let message = req.body.message;
+        await messagesServices.createMessage(
+            channelId, res.locals.username, message);
+        res.status(200).json({status: true});
+    } catch (e) {
+        res.status(404).json({status: false});
+    }
+    // The information is checked with the userId to
+    // make sure that is correct through auth0.
     // The post body is given with the userId, message, timestamp.
     // res.status(200).send(res.locals.username);
 });
 
+router.post('/addFriend/:channelName', async (req, res) => {
+    let channelId = req.body.channelId;
+    try {
+        await userServices.addPersonToChannel(
+            channelId, req.param.channelName, res.locals.id
+        );
+        res.status(200).json({status: true});
+    } catch (e) {
+        res.status(404).json({status: false});
+    }
+});
 
 export default router;

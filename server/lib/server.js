@@ -9,6 +9,8 @@ var _express = _interopRequireDefault(require("express"));
 
 var _bodyParser = _interopRequireDefault(require("body-parser"));
 
+var _helmet = _interopRequireDefault(require("helmet"));
+
 var _user_api = _interopRequireDefault(require("./api/user_api.js"));
 
 var _channel_api = _interopRequireDefault(require("./api/channel_api.js"));
@@ -28,7 +30,9 @@ const app = (0, _express.default)(); // Body Parser allows for req body.
 app.use(_bodyParser.default.json());
 app.use(_bodyParser.default.urlencoded({
   extended: true
-})); // Makes sure to always log the request, url, and header on every request to
+})); // Extra Protection for the api endpoints.
+
+app.use((0, _helmet.default)()); // Makes sure to always log the request, url, and header on every request to
 // the server.
 
 app.use((req, res, next) => {

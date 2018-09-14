@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import helmet from 'helmet';
 import userRouter from './api/user_api.js';
 import channelRouter from './api/channel_api.js';
 import log from './config.js';
@@ -17,6 +18,8 @@ const app = express();
 // Body Parser allows for req body.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+// Extra Protection for the api endpoints.
+app.use(helmet());
 
 
 // Makes sure to always log the request, url, and header on every request to

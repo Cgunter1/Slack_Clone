@@ -24,9 +24,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // This will be the api that will serve the messages from the MongoDB database.
 // import bodyParser from 'body-parser';
 const router = _express.default.Router(); // TODO:
-// Add Channel.
 // Add Friend to channel.
-// Remove Channel.
+// Add verification headers to check each of the types
+// for the api components like channelId for Mongo ObjectId.
+// Also add tests for addMessage and addFriend
 // Verifies Users before going to any of the channels.
 
 
@@ -132,9 +133,38 @@ router.get('/:channelName', async (req, res) => {
   // When the router recieves this request, it will return all
   // the messages associated with that channelId.
 });
-router.post('/:channelId', (req, res) => {// The information is checked with the userId to make sure that is correct through auth0.
+router.post('/addMessage/:channelName', async (req, res) => {
+  // Body should include the channel ObjectId, Message, and username.
+  try {
+    let channelId = req.body.channelId;
+    let message = req.body.message;
+    await _messagesServices.default.createMessage(channelId, res.locals.username, message);
+    res.status(200).json({
+      status: true
+    });
+  } catch (e) {
+    res.status(404).json({
+      status: false
+    });
+  } // The information is checked with the userId to
+  // make sure that is correct through auth0.
   // The post body is given with the userId, message, timestamp.
   // res.status(200).send(res.locals.username);
+
+});
+router.post('/addFriend/:channelName', async (req, res) => {
+  let channelId = req.body.channelId;
+
+  try {
+    await _userServices.default.addPersonToChannel(channelId, req.param.channelName, res.locals.id);
+    res.status(200).json({
+      status: true
+    });
+  } catch (e) {
+    res.status(404).json({
+      status: false
+    });
+  }
 });
 var _default = router;
 exports.default = _default;
