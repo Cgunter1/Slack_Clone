@@ -161,6 +161,7 @@ router.post('/addFriend/:channelName', async (req, res) => {
       status: true
     });
   } catch (e) {
+    console.error(e);
     res.status(404).json({
       status: false
     });

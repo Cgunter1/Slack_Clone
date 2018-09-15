@@ -33,6 +33,7 @@ let client = config.redisClient;
 chai.use(chaiHttp);
 
 describe('Database Tests', function() {
+    this.slow(1000)
     before(function(done) {
         mongoose.connect(URL, {useNewUrlParser: true});
         mongoose.connection.once('connected', function() {
@@ -461,11 +462,18 @@ describe('Database Tests', function() {
         });
         describe('Channel Api Interactions:', function() {
             let channelId;
+            let friendId;
             before(function(done) {
                 Promise.all([
                     channelServices.createChannel(
                         'Cinefiled', userId, 'Channel', false),
+                    userServices.createUser(
+                        'email@gmail.com',
+                        'Cgunter1',
+                        '123password',
+                    ),
                 ]).then((res) => {
+                    friendId = res[1]._id;
                     channelId = res[0]._id;
                     Promise.all([
                         messageServices.createMessage(
@@ -475,7 +483,27 @@ describe('Database Tests', function() {
                     ]).then((res) => done());
                 });
             });
-            describe('Post and retrieve a couple Messages by User', function() {
+            describe('Post a Message to a Channel', function() {
+                it('Should Post Message', function(done) {
+                    chai
+                        .request(host)
+                        .post('/channel/addMessage/Channel')
+                        .type('json')
+                        .set({
+                            'authorization': `Bearer ${permToken}`,
+                        })
+                        .send({
+                            'channelId': channelId,
+                            'message': 'Hello',
+                        })
+                        .end((err, res) => {
+                            if (err) throw err;
+                            expect(res).to.have.status(200);
+                            done();
+                        });
+                });
+            });
+            describe('Retrieve a couple Messages from Channel', function() {
                 it('Should Return Messages',
                     function(done) {
                     chai
@@ -509,6 +537,25 @@ describe('Database Tests', function() {
                         });
                 });
             });
+            describe('Add Friend to Channel', function() {
+                it('Should return channel', function(done) {
+                    chai
+                        .request(host)
+                        .post('/channel/addFriend/Cgunter1')
+                        .type('json')
+                        .set({
+                            'authorization': `Bearer ${permToken}`,
+                        })
+                        .send({
+                            'channelId': channelId,
+                        })
+                        .end((err, res) => {
+                            if (err) throw err;
+                            expect(res).to.have.status(200);
+                            done();
+                        });
+                });
+            });
             describe('Delete Channel by User', function() {
                 it('Should Return Channel',
                     function(done) {
@@ -529,10 +576,17 @@ describe('Database Tests', function() {
                         });
                 });
             });
+            after(function(done) {
+                Promise.all([
+                channelServices.removeChannel(
+                    friendId, channelId, true),
+                ]).then((res) => done());
+            });
         });
         after(function(done) {
             Promise.all([
                 userServices.deleteUser({username: 'Cinefiled'}),
+                userServices.deleteUser({username: 'Cgunter1'}),
             ]).then(() => done());
         });
     });

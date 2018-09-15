@@ -48,6 +48,7 @@ let client = _config.default.redisClient; // This establishes the logging I will
 _chai.default.use(_chaiHttp.default);
 
 describe('Database Tests', function () {
+  this.slow(1000);
   before(function (done) {
     _mongoose.default.connect(URL, {
       useNewUrlParser: true
@@ -363,13 +364,29 @@ describe('Database Tests', function () {
     });
     describe('Channel Api Interactions:', function () {
       let channelId;
+      let friendId;
       before(function (done) {
-        Promise.all([_channelsServices.default.createChannel('Cinefiled', userId, 'Channel', false)]).then(res => {
+        Promise.all([_channelsServices.default.createChannel('Cinefiled', userId, 'Channel', false), _userServices.default.createUser('email@gmail.com', 'Cgunter1', '123password')]).then(res => {
+          friendId = res[1]._id;
           channelId = res[0]._id;
           Promise.all([_messagesServices.default.createMessage(channelId, 'Cinefiled', 'H'), _messagesServices.default.createMessage(channelId, 'Cinefiled', 'W')]).then(res => done());
         });
       });
-      describe('Post and retrieve a couple Messages by User', function () {
+      describe('Post a Message to a Channel', function () {
+        it('Should Post Message', function (done) {
+          _chai.default.request(host).post('/channel/addMessage/Channel').type('json').set({
+            'authorization': `Bearer ${permToken}`
+          }).send({
+            'channelId': channelId,
+            'message': 'Hello'
+          }).end((err, res) => {
+            if (err) throw err;
+            (0, _chai.expect)(res).to.have.status(200);
+            done();
+          });
+        });
+      });
+      describe('Retrieve a couple Messages from Channel', function () {
         it('Should Return Messages', function (done) {
           _chai.default.request(host).get('/channel/Channel').type('json').set({
             'authorization': `Bearer ${permToken}`
@@ -391,6 +408,19 @@ describe('Database Tests', function () {
           });
         });
       });
+      describe('Add Friend to Channel', function () {
+        it('Should return channel', function (done) {
+          _chai.default.request(host).post('/channel/addFriend/Cgunter1').type('json').set({
+            'authorization': `Bearer ${permToken}`
+          }).send({
+            'channelId': channelId
+          }).end((err, res) => {
+            if (err) throw err;
+            (0, _chai.expect)(res).to.have.status(200);
+            done();
+          });
+        });
+      });
       describe('Delete Channel by User', function () {
         it('Should Return Channel', function (done) {
           _chai.default.request(host).del('/channel/removeChannel/Channel').type('json').set({
@@ -404,10 +434,15 @@ describe('Database Tests', function () {
           });
         });
       });
+      after(function (done) {
+        Promise.all([_channelsServices.default.removeChannel(friendId, channelId, true)]).then(res => done());
+      });
     });
     after(function (done) {
       Promise.all([_userServices.default.deleteUser({
         username: 'Cinefiled'
+      }), _userServices.default.deleteUser({
+        username: 'Cgunter1'
       })]).then(() => done());
     });
   });

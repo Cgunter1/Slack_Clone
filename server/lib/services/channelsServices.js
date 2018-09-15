@@ -79,7 +79,7 @@ async function getChannel(channelId) {
  * friendChannel), the channel is deleted outright.
  * @param {number} userId Name of the user that is removing the channel.
  * @param {number} channelId Id of the channel that is being removed.
- * @param {number} friendChannel Name of the user that is creating the channel.
+ * @param {boolean} friendChannel Name of the user that is creating the channel.
  * @return {object} The Object will be the channel removed, null, or an error.
  */
 
@@ -91,6 +91,9 @@ async function removeChannel(userId, channelId, friendChannel) {
     if (friendChannel) {
       return await _channelModel.default.deleteOne({
         _id: channelId
+      });
+      await _MessageModel.default.deleteMany({
+        channel_id: channelId
       });
     }
 

@@ -1,27 +1,21 @@
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4258,"level":30,"msg":"Logged Channel into Munter","time":"2018-09-14T01:25:08.978Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4258,"level":30,"msg":"Logged Blank into Cgunter","time":"2018-09-14T01:25:12.853Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4258,"level":30,"msg":"POST Request of /user/createUser and Body: [object Object]","time":"2018-09-14T01:25:13.763Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4258,"level":30,"msg":"POST Request of /user/createUser and Body: [object Object]","time":"2018-09-14T01:25:14.159Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4258,"level":30,"msg":"POST Request of /user/login and Body: [object Object]","time":"2018-09-14T01:25:14.243Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4258,"level":30,"msg":"POST Request of /user/logout and Body: [object Object]","time":"2018-09-14T01:25:14.492Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4258,"level":30,"msg":"GET Request of /channel/Channel and Body: [object Object]","time":"2018-09-14T01:25:15.055Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4258,"level":30,"msg":"GET Request of /channel/addChannel/newChannel and Body: [object Object]","time":"2018-09-14T01:25:15.296Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4258,"level":30,"msg":"DELETE Request of /channel/removeChannel/Channel and Body: [object Object]","time":"2018-09-14T01:25:15.614Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4267,"level":30,"msg":"Logged Channel into Munter","time":"2018-09-14T01:25:56.586Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4267,"level":30,"msg":"Logged Blank into Cgunter","time":"2018-09-14T01:26:00.541Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4267,"level":30,"msg":"POST Request of /user/createUser and Body: [object Object]","time":"2018-09-14T01:26:01.420Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4267,"level":30,"msg":"POST Request of /user/createUser and Body: [object Object]","time":"2018-09-14T01:26:01.807Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4267,"level":30,"msg":"POST Request of /user/login and Body: [object Object]","time":"2018-09-14T01:26:01.896Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4267,"level":30,"msg":"POST Request of /user/logout and Body: [object Object]","time":"2018-09-14T01:26:02.160Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4267,"level":30,"msg":"GET Request of /channel/Channel and Body: [object Object]","time":"2018-09-14T01:26:02.731Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4267,"level":30,"msg":"GET Request of /channel/addChannel/newChannel and Body: [object Object]","time":"2018-09-14T01:26:02.976Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4267,"level":30,"msg":"DELETE Request of /channel/removeChannel/Channel and Body: [object Object]","time":"2018-09-14T01:26:03.326Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4341,"level":30,"msg":"Logged Channel into Munter","time":"2018-09-14T02:02:18.429Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4341,"level":30,"msg":"Logged Blank into Cgunter","time":"2018-09-14T02:02:23.351Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4341,"level":30,"msg":"POST Request of /user/createUser and Body: [object Object]","time":"2018-09-14T02:02:24.336Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4341,"level":30,"msg":"POST Request of /user/createUser and Body: [object Object]","time":"2018-09-14T02:02:24.983Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4341,"level":30,"msg":"POST Request of /user/login and Body: [object Object]","time":"2018-09-14T02:02:25.079Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4341,"level":30,"msg":"POST Request of /user/logout and Body: [object Object]","time":"2018-09-14T02:02:25.562Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4341,"level":30,"msg":"GET Request of /channel/Channel and Body: [object Object]","time":"2018-09-14T02:02:26.200Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4341,"level":30,"msg":"GET Request of /channel/addChannel/newChannel and Body: [object Object]","time":"2018-09-14T02:02:26.496Z","v":0}
-{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":4341,"level":30,"msg":"DELETE Request of /channel/removeChannel/Channel and Body: [object Object]","time":"2018-09-14T02:02:26.852Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6755,"level":30,"msg":"POST Request of /user/createUser and Body: [object Object]","time":"2018-09-15T00:19:53.832Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6755,"level":30,"msg":"POST Request of /user/createUser and Body: [object Object]","time":"2018-09-15T00:19:54.169Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6755,"level":30,"msg":"POST Request of /user/login and Body: [object Object]","time":"2018-09-15T00:19:54.272Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6755,"level":30,"msg":"POST Request of /user/logout and Body: [object Object]","time":"2018-09-15T00:19:54.549Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6755,"level":30,"msg":"GET Request of /channel/Channel and Body: [object Object]","time":"2018-09-15T00:19:55.088Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6755,"level":30,"msg":"GET Request of /channel/addChannel/newChannel and Body: [object Object]","time":"2018-09-15T00:19:55.330Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6755,"level":30,"msg":"POST Request of /channel/addFriend/Cgunter1 and Body: [object Object]","time":"2018-09-15T00:19:55.663Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6755,"level":30,"msg":"Logged undefined into Cinefiled","time":"2018-09-15T00:19:56.072Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6755,"level":30,"msg":"DELETE Request of /channel/removeChannel/Channel and Body: [object Object]","time":"2018-09-15T00:19:56.077Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"Logged Channel into Munter","time":"2018-09-15T00:24:31.763Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"Logged Blank into Cgunter","time":"2018-09-15T00:24:35.603Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"POST Request of /user/createUser and Body: [object Object]","time":"2018-09-15T00:24:36.429Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"POST Request of /user/createUser and Body: [object Object]","time":"2018-09-15T00:24:36.768Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"POST Request of /user/login and Body: [object Object]","time":"2018-09-15T00:24:36.851Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"POST Request of /user/logout and Body: [object Object]","time":"2018-09-15T00:24:37.082Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"POST Request of /channel/addMessage/Channel and Body: [object Object]","time":"2018-09-15T00:24:37.572Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"GET Request of /channel/Channel and Body: [object Object]","time":"2018-09-15T00:24:37.886Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"GET Request of /channel/addChannel/newChannel and Body: [object Object]","time":"2018-09-15T00:24:38.124Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"POST Request of /channel/addFriend/Cgunter1 and Body: [object Object]","time":"2018-09-15T00:24:38.443Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"Logged undefined into Cinefiled","time":"2018-09-15T00:24:38.838Z","v":0}
+{"name":"slack_app","hostname":"Christophers-MacBook-Pro.local","pid":6789,"level":30,"msg":"DELETE Request of /channel/removeChannel/Channel and Body: [object Object]","time":"2018-09-15T00:24:38.842Z","v":0}
