@@ -13,6 +13,12 @@ var _tokenService = _interopRequireDefault(require("../services/tokenService"));
 
 var _jwtauth = _interopRequireDefault(require("../user-auth/jwtauth.js"));
 
+var _isJWT = _interopRequireDefault(require("validator/lib/isJWT"));
+
+var _isMongoId = _interopRequireDefault(require("validator/lib/isMongoId"));
+
+var _trim = _interopRequireDefault(require("validator/lib/trim"));
+
 var _userServices = _interopRequireDefault(require("../services/userServices"));
 
 var _messagesServices = _interopRequireDefault(require("../services/messagesServices"));
@@ -38,6 +44,7 @@ router.use(async function (req, res, next) {
     try {
       let bearer = req.headers.authorization.split(' ');
       let token = bearer[1];
+      if (!(0, _isJWT.default)(token)) throw new Error('Not JWT');
       let key = await _tokenService.default.findSecretKey(token);
 
       let verify = _jwtauth.default.jwtVerify(token, key);
@@ -56,7 +63,9 @@ router.use(async function (req, res, next) {
 });
 router.get('/addChannel/:channelName', async (req, res) => {
   try {
-    let channel = await _channelsServices.default.createChannel(res.locals.username, res.locals.id, req.params.channelName, false);
+    let username = (0, _trim.default)(res.locals.username);
+    let channelName = (0, _trim.default)(req.params.channelName);
+    let channel = await _channelsServices.default.createChannel(username, res.locals.id, channelName, false);
     res.status(200).json({
       status: true,
       channel: channel
@@ -75,6 +84,7 @@ router.delete('/removeChannel/:channelName', async (req, res) => {
   let channelId = req.body.channelId;
 
   try {
+    if (!(0, _isMongoId.default)(channelId)) throw new Error('channelId not MongoId');
     await _channelsServices.default.removeChannel(res.locals.id, channelId, false);
     res.status(200).json({
       status: true

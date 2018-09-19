@@ -3,6 +3,7 @@ import express from 'express';
 import isEmail from 'validator/lib/isEmail';
 import trim from 'validator/lib/trim';
 import emailNormalizer from 'validator/lib/normalizeEmail';
+import jwtTokenVerify from 'validator/lib/isJWT'
 import uuid from 'uuid';
 import userServices from '../services/userServices.js';
 import tokenService from '../services/tokenService.js';
@@ -48,6 +49,12 @@ router.post('/updatePassword_token', (req, res) => {});
 // This route creates the user.
 // Accepts username, email, and password.
 // Eventually, phoneNumber and security questions.
+
+
+// Creates a user
+// body: email(string), username(string), and password(string).
+// return: json is returned with 200 if true
+// or 404 and status as false if false.
 router.post('/createUser', async (req, res) => {
     let email = req.body.email;
     let username = req.body.username.toString();
@@ -85,8 +92,10 @@ router.post('/createUser', async (req, res) => {
     // The post body is given with the userId, message, timestamp.
 });
 
-// The login will go and verify the username and password.
-// If correct, it will return a jwt.
+// Login a user
+// body: username(string) and password(string).
+// return: json is returned with 200, userId, and JWT if true
+// or 404 and status as false if false.
 router.post('/login', async (req, res) => {
     let date = Date.now();
     let expDate = date + (1000 * 600);
@@ -105,6 +114,9 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// Logout a user
+// return: json is returned with 200, userId, and JWT if true
+// or 404 and status as false if false.
 router.post('/logout', async (req, res) => {
     if (!req.headers.authorization) {
         res.status(404).json({status: false});
@@ -112,6 +124,7 @@ router.post('/logout', async (req, res) => {
         let bearer = req.headers.authorization.split(' ');
         let token = bearer[1];
         try {
+            if (!jwtTokenVerify(token)) throw new Error('Not JWT');
             await tokenService.removeSecretKey(token);
             res.status(200).json({status: true});
         } catch (e) {

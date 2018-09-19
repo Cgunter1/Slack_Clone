@@ -17,6 +17,8 @@ var _trim = _interopRequireDefault(require("validator/lib/trim"));
 
 var _normalizeEmail = _interopRequireDefault(require("validator/lib/normalizeEmail"));
 
+var _isJWT = _interopRequireDefault(require("validator/lib/isJWT"));
+
 var _uuid = _interopRequireDefault(require("uuid"));
 
 var _userServices = _interopRequireDefault(require("../services/userServices.js"));
@@ -152,6 +154,7 @@ router.post('/logout', async (req, res) => {
     let token = bearer[1];
 
     try {
+      if (!(0, _isJWT.default)(token)) throw new Error('Not JWT');
       await _tokenService.default.removeSecretKey(token);
       res.status(200).json({
         status: true

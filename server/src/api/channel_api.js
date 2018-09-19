@@ -2,6 +2,9 @@
 import express from 'express';
 import tokenServices from '../services/tokenService';
 import jwtAuth from '../user-auth/jwtauth.js';
+import jwtTokenVerify from 'validator/lib/isJWT';
+import mongoIdVerify from 'validator/lib/isMongoId';
+import trim from 'validator/lib/trim';
 import userServices from '../services/userServices';
 import messagesServices from '../services/messagesServices';
 import channelsServices from '../services/channelsServices';
@@ -23,6 +26,7 @@ router.use(async function(req, res, next) {
         try {
         let bearer = req.headers.authorization.split(' ');
         let token = bearer[1];
+        if (!jwtTokenVerify(token)) throw new Error('Not JWT');
         let key = await tokenServices.findSecretKey(token);
         let verify = jwtAuth.jwtVerify(token, key);
         if (verify) {
@@ -38,6 +42,10 @@ router.use(async function(req, res, next) {
     }
 });
 
+// Creates a channel and adds to user's profile.
+// params: channelName (String)
+// return: json is returned with 200 and channelObject if true
+// or 404 status as false if false.
 router.get('/addChannel/:channelName', async (req, res) => {
     try {
         let channel = await channelsServices.createChannel(
@@ -52,10 +60,17 @@ router.get('/addChannel/:channelName', async (req, res) => {
     }
 });
 
+// Removes a channel from the user's profile, and deletes it and
+// all messages if that user is the only member.
+// params: channelName (String)
+// body: channelId (MongoId)
+// return: json is returned with 200 and status as true if true
+// or 404 and status as false if false.
 router.delete('/removeChannel/:channelName', async (req, res) => {
     if (!req.body.channelId) res.status(404).json({status: false});
     let channelId = req.body.channelId;
     try {
+        if (!mongoIdVerify(channelId)) throw new Error('channelId not MongoId');
         await channelsServices.removeChannel(
             res.locals.id,
             channelId,
@@ -68,8 +83,13 @@ router.delete('/removeChannel/:channelName', async (req, res) => {
     }
 });
 
+// Retrieves a channelObject based on the name of the channel
+// and userId
+// params: channelName(String).
+// body: channelId(MongoId) and userId(number).
+// return: json is returned with 200, channelId, and messages if true
+// or 403/404 and status as false if false.
 router.get('/:channelName', async (req, res) => {
-    // Parameters: channelId, count(optional), and userId.
     // *In **React**, before sending a request,
     // React would check in its state that the user has access
     // to this particular channel.*
@@ -109,10 +129,15 @@ router.get('/:channelName', async (req, res) => {
     // the messages associated with that channelId.
 });
 
+// Adds a message to the channel's List.
+// params: channelName(String).
+// body: channelId(MongoId), username(string), and message(string).
+// return: json is returned with 200 if true
+// or 404 and status as false if false.
 router.post('/addMessage/:channelName', async (req, res) => {
-    // Body should include the channel ObjectId, Message, and username.
     try {
         let channelId = req.body.channelId;
+        if (!mongoIdVerify(channelId)) throw new Error('channelId not MongoId');
         let message = req.body.message;
         await messagesServices.createMessage(
             channelId, res.locals.username, message);
@@ -120,12 +145,13 @@ router.post('/addMessage/:channelName', async (req, res) => {
     } catch (e) {
         res.status(404).json({status: false});
     }
-    // The information is checked with the userId to
-    // make sure that is correct through auth0.
-    // The post body is given with the userId, message, timestamp.
-    // res.status(200).send(res.locals.username);
 });
 
+// Adds a friend to the channel by user.
+// params: channelName(String).
+// body: channelId(MongoId) and channelName(string).
+// return: json is returned with 200 if true 
+// or 404 and status as false if false.
 router.post('/addFriend/:channelName', async (req, res) => {
     let channelId = req.body.channelId;
     try {
