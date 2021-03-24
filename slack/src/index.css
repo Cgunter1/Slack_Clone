@@ -5,18 +5,16 @@ body {
 }
 
 .message-list {
-  margin-left: 22%;
-  display: inline-block;
-  margin-bottom: 39px;
+  margin-bottom: 109px;
   vertical-align: bottom;
-  height: 100%;
-  width: 50%;
+  height: 95%;
+  width: 100%;
   position: fixed;
   top: 0;
+  overflow: scroll;
 }
 
 .message-line {
-
   vertical-align: bottom;
   list-style: none;
 }
@@ -25,8 +23,7 @@ body {
   position: fixed;
   left: 0;
   bottom: 0;
-  margin-left: 25%;
-  width: 75%;
+  width: 100%;
   display: inline-block;
   border: 1px solid black;
   height: 40px;

@@ -23,14 +23,14 @@ class SlackMessage extends React.Component {
     componentDidMount() {
         let that = this;
         setTimeout(function(){
-        let messages = that.state.messages.slice();
+          let messages = that.state.messages.slice();
 
-        messages.push(channelData[0]);
-        messages.push(userData[0]);
+          messages.push(channelData[0]);
+          messages.push(userData[0]);
 
-        that.setState({
-            messages: messages,
-        });
+          that.setState({
+              messages: messages,
+          });
         }, 2000);
         this.scrollBottom();
     }
@@ -98,7 +98,8 @@ class SlackMessage extends React.Component {
                 <Navbar 
                     tabStatus={this.state.tab} 
                     changeTab={() => this.changeTab}
-                    tabOptions={tabOptions}/>
+                    tabOptions={tabOptions}    
+                />
                 <div className="message-list">
                     <ul className="message-line">
                         <MessageList messagelist={this.state.messages} tabstatus={this.state.tab}/>

@@ -10,9 +10,10 @@
 
 .navbar {
     position: fixed;
-    width: 25%;
+    width: 100%;
+    max-width: 300px;
     height: 100vh;
-    background-color: rgba(21, 21, 82, 0.815);
+    background-color: rgba(0, 0, 82, 1);
     display: inline-block;
     color: white;
     min-width: 100px;
@@ -37,6 +38,7 @@
 .data {
     padding-left: 3px;
     cursor: pointer;
+    width: 100%;
 }
 
 .people {
@@ -51,4 +53,11 @@
 .people-items li {
     margin-bottom: 3px;
     cursor: pointer;
+}
+
+.nav-header {
+  display: flex;
+  width: 90%;
+  justify-content: space-between;
+  align-items: center;
 }

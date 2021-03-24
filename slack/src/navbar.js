@@ -7,12 +7,18 @@ function Navbar ({tabStatus, changeTab, tabOptions}){
         <div className="navbar">
             <div className="content">
                 <div className="channels">
-                    CHANNELS
+                  <div className="nav-header">
+                    <h3>
+                      CHANNELS
+                    </h3>
+                    <h4>
+                      Close
+                    </h4>
+                  </div>
                     <ul className="channel-items">
                         {tabOptions[0].channels.map(data => 
-                        <li key={data} className={tabStatus === data ? "current-tab":""}>
-                            <span className="data"># <span onClick={changeTab(data)}>{data}</span>
-                            </span>
+                        <li onClick={changeTab(data)} key={data} className={tabStatus === data ? "current-tab":""}>
+                            <div className="data">{data}</div>
                         </li>)}
                     </ul>
                 </div>
@@ -22,7 +28,7 @@ function Navbar ({tabStatus, changeTab, tabOptions}){
                     <ul className="people-items">
                         {tabOptions[0].users.map(data => 
                         <li onClick={changeTab(data)} key={data} className={tabStatus === data ? "current-tab":""}>
-                            <span className="data">{data}</span>
+                            <div className="data">{data}</div>
                         </li>)}
                     </ul>
                 </div>
