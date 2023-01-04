@@ -6,7 +6,7 @@
     "moment": "^2.22.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
-    "react-scripts": "1.1.4",
+    "react-scripts": "5.0.1",
     "react-scroll": "^1.7.10"
   },
   "scripts": {
